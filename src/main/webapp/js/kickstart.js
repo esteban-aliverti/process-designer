@@ -79,3 +79,44 @@ var Kickstart = {
 // register kickstart as the new onload event listener on current window.
 // previous listener(s) are triggered to launch with kickstart.
 Event.observe(window, 'load', Kickstart.load);
+
+/**
+ * Method to load model or create new one
+ * (moved from editor handler)
+ */
+window.onOryxResourcesLoaded = function() {
+	var stencilset = ORYX.Utils.getParamFromUrl('stencilset') || ORYX.CONFIG.SSET;
+	var editor_parameters = {
+		id: ORYX.UUID,
+		stencilset: {
+			url: stencilset
+		}
+	};
+	if(!(ORYX.UUID === undefined)) {
+		
+ 		//load the model from the repository from its uuid
+		new Ajax.Request(ORYX.CONFIG.UUID_URL(), {
+            asynchronous: false,
+            encoding: 'UTF-8',
+            method: 'get',
+            onSuccess: function(transport) {
+				response = transport.responseText;
+				if (response.length != 0) {
+				    try {
+					    model = response.evalJSON();
+					    editor_parameters.model = model;
+				    } catch(err) {
+				    	ORYX.LOG.error(err);
+				    }
+				}
+				
+			},
+            onFailure: function(transport) {
+            	ORYX.LOG.error("Could not load the model for uuid " + ORYX.UUID);
+			}
+        });
+	}
+	// finally open the editor:
+	var editor = new ORYX.Editor(editor_parameters);
+    ORYX.EDITOR = editor;
+};
