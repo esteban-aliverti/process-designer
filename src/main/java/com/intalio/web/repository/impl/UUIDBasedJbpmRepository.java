@@ -1,5 +1,6 @@
 package com.intalio.web.repository.impl;
 
+import com.intalio.web.preprocessing.impl.AbderaGuvnorHelper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +15,8 @@ import org.apache.log4j.Logger;
 import com.intalio.web.profile.IDiagramProfile;
 import com.intalio.web.profile.impl.ExternalInfo;
 import com.intalio.web.repository.IUUIDBasedRepository;
+import org.apache.abdera.protocol.client.ClientResponse;
+import org.apache.commons.io.IOUtils;
 
 public class UUIDBasedJbpmRepository implements IUUIDBasedRepository {
 
@@ -29,8 +32,13 @@ public class UUIDBasedJbpmRepository implements IUUIDBasedRepository {
     public byte[] load(HttpServletRequest req, String uuid, IDiagramProfile profile) throws Exception {
         String processjson = "";
         String preProcessingParam = req.getParameter("pp");
+        String securityToken = req.getParameter("securityToken");
+        
         // check with Guvnor to see what it has for this uuid for us
-        String processxml = doHttpUrlConnectionAction(buildExternalLoadURL(profile, uuid));
+        AbderaGuvnorHelper abderaGuvnorHelper = new AbderaGuvnorHelper(this.buildExternalLoadURL(profile, uuid), securityToken);
+        ClientResponse response = abderaGuvnorHelper.invokeGET(this.buildExternalLoadURL(profile, uuid), "application/xml");
+        
+        String processxml = IOUtils.toString(response.getInputStream(),"UTF-8");
         if(processxml != null && processxml.length() > 0) {
             processjson = profile.createUnmarshaller().parseModel(processxml, profile, preProcessingParam);
             return processjson.getBytes("UTF-8");
@@ -45,7 +53,7 @@ public class UUIDBasedJbpmRepository implements IUUIDBasedRepository {
     }
     
     private String buildExternalLoadURL(IDiagramProfile profile, String uuid) {
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         buff.append(ExternalInfo.getExternalProtocol(profile));
         
         buff.append("://");
@@ -53,6 +61,8 @@ public class UUIDBasedJbpmRepository implements IUUIDBasedRepository {
         buff.append("/");
         buff.append(profile.getExternalLoadURLSubdomain());
         buff.append("?uuid=").append(uuid);
+        
+        //usr and password still needed by Guvnor's internal authentication
         buff.append("&usr=").append(profile.getUsr());
         buff.append("&pwd=").append(profile.getPwd());
         

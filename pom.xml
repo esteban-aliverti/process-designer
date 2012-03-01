@@ -8,8 +8,8 @@
   
   <properties>
     <mvel.version>2.1.0.drools4</mvel.version>
-    <drools.version>5.3.1.Final</drools.version>
-    <jbpm.version>5.2.0.Final</jbpm.version>
+    <drools.version>5.4.0-SNAPSHOT</drools.version>
+    <jbpm.version>5.3.0-SNAPSHOT</jbpm.version>
     <batik.version>1.6-1</batik.version>
   </properties>
 
@@ -24,16 +24,20 @@
         <groupId>org.jbpm</groupId>
         <artifactId>jbpm-flow-builder</artifactId>
         <version>${jbpm.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-flow</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-compiler</artifactId>
-          </exclusion>
-        </exclusions>
+         <exclusions>
+            <exclusion>
+               <artifactId>knowledge-api</artifactId>
+               <groupId>org.drools</groupId>
+            </exclusion>
+            <exclusion>
+               <artifactId>drools-compiler</artifactId>
+               <groupId>org.drools</groupId>
+            </exclusion>
+            <exclusion>
+               <artifactId>drools-core</artifactId>
+               <groupId>org.drools</groupId>
+            </exclusion>
+         </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -71,12 +75,11 @@
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
         <version>${drools.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.drools</groupId>
-            <artifactId>knowledge-api</artifactId>
-          </exclusion>
-        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-compiler</artifactId>
+        <version>${drools.version}</version>
       </dependency>
       
       <!-- Google's closure-compiler -->

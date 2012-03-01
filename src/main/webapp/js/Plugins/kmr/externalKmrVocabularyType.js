@@ -102,7 +102,7 @@ Ext.form.ExternalKMRVocabularyEditor = function(_factType, _onSave){
                     {
                         text: 'Cancel',
                         handler: this.closePopup.bind(this)
-                    },
+                    }
                 ]
             });
         

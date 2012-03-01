@@ -21,9 +21,11 @@ import org.drools.util.codec.Base64;
 public class AbderaGuvnorHelper {
     
     private String guvnorURL;
+    private String securityToken;
 
-    public AbderaGuvnorHelper(String guvnorURL) {
+    public AbderaGuvnorHelper(String guvnorURL, String securityToken) {
         this.guvnorURL = guvnorURL;
+        this.securityToken = securityToken;
     }
     
     public RequestOptions createDefaultOptions() {
@@ -39,7 +41,8 @@ public class AbderaGuvnorHelper {
         AbderaClient client = new AbderaClient(abdera);
         RequestOptions options = client.getDefaultRequestOptions();
         options.setAuthorization("Basic " + new Base64().encodeToString(("admin:admin".getBytes())));
-        //options.setHeader("pleaseSkipSSO","yes,please!");
+        options.setHeader("SAMLResponse",securityToken);
+        options.setHeader("SAMLResponseEncoded","true");
 
         options.setAccept(acceptType);
 

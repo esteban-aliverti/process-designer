@@ -30,6 +30,8 @@ import com.intalio.web.profile.IDiagramProfile;
 import com.intalio.web.profile.IDiagramProfileService;
 import com.intalio.web.profile.impl.ExternalInfo;
 import com.intalio.web.profile.impl.ProfileServiceImpl;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /** 
  * 
@@ -51,15 +53,20 @@ public class ProcessInfoServlet extends HttpServlet {
             throws ServletException, IOException {
 		String uuid = req.getParameter("uuid");
         String profileName = req.getParameter("profile");
+        String securityToken = req.getParameter("securityToken");
         
-        IDiagramProfile profile = getProfile(req, profileName);
+        if (securityToken != null){
+            securityToken = URLDecoder.decode(securityToken, "UTF-8");
+        }
+        
+        IDiagramProfile profile = getProfile(req, profileName); 
 
         try {
         	// find out what package the uuid belongs to
-        	String[] packageAssetInfo = findPackageAndAssetInfo(uuid, profile);
+        	String[] packageAssetInfo = findPackageAndAssetInfo(uuid, profile, securityToken);
         	String packageName = packageAssetInfo[0];
         	String assetName = packageAssetInfo[1];
-        	Map<String, String> processInfo = getProcessInfo(packageName, assetName, uuid, profile);
+        	Map<String, String> processInfo = getProcessInfo(packageName, assetName, uuid, profile, securityToken);
         	resp.setCharacterEncoding("UTF-8");
         	resp.setContentType("text/html");
         	resp.getWriter().write(createHtmlTable(processInfo));
@@ -85,7 +92,7 @@ public class ProcessInfoServlet extends HttpServlet {
 		return sb.toString();
 	}
 	
-	private Map<String, String> getProcessInfo(String packageName, String assetName, String uuid, IDiagramProfile profile) throws Exception {
+	private Map<String, String> getProcessInfo(String packageName, String assetName, String uuid, IDiagramProfile profile, String securityToken) throws Exception {
 		Map<String, String> infoMap = new LinkedHashMap<String, String>();
 		infoMap.put("Name", assetName);
 		infoMap.put("Format", "");
@@ -106,7 +113,7 @@ public class ProcessInfoServlet extends HttpServlet {
 		XMLInputFactory factory = XMLInputFactory.newInstance();
         XMLStreamReader reader = factory
                .createXMLStreamReader(getInputStreamForURL(assetInfoURL,
-                       "GET", profile));
+                       "GET", profile, securityToken));
         while (reader.hasNext()) {
             if (reader.next() == XMLStreamReader.START_ELEMENT) {
                 if ("format".equals(reader.getLocalName())) {
@@ -147,7 +154,7 @@ public class ProcessInfoServlet extends HttpServlet {
     }
 	
 	private String[] findPackageAndAssetInfo(String uuid,
-            IDiagramProfile profile) throws Exception {
+            IDiagramProfile profile, String securityToken) throws Exception {
         List<String> packages = new ArrayList<String>();
         String packagesURL = ExternalInfo.getExternalProtocol(profile)
                 + "://"
@@ -159,7 +166,7 @@ public class ProcessInfoServlet extends HttpServlet {
          XMLInputFactory factory = XMLInputFactory.newInstance();
          XMLStreamReader reader = factory
                 .createXMLStreamReader(getInputStreamForURL(packagesURL,
-                        "GET", profile));
+                        "GET", profile, securityToken));
         while (reader.hasNext()) {
             if (reader.next() == XMLStreamReader.START_ELEMENT) {
                 if ("title".equals(reader.getLocalName())) {
@@ -180,7 +187,7 @@ public class ProcessInfoServlet extends HttpServlet {
             XMLInputFactory pfactory = XMLInputFactory.newInstance();
             XMLStreamReader preader = pfactory
                    .createXMLStreamReader(getInputStreamForURL(
-                            packageAssetURL, "GET", profile));
+                            packageAssetURL, "GET", profile, securityToken));
             String title = "";
             while (preader.hasNext()) {
                 int next = preader.next();
@@ -207,7 +214,7 @@ public class ProcessInfoServlet extends HttpServlet {
     }
 	
 	private InputStream getInputStreamForURL(String urlLocation,
-            String requestMethod, IDiagramProfile profile) throws Exception {
+            String requestMethod, IDiagramProfile profile, String securityToken) throws Exception {
         URL url = new URL(urlLocation);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -225,7 +232,7 @@ public class ProcessInfoServlet extends HttpServlet {
         connection.setConnectTimeout(5 * 1000);
         connection.setReadTimeout(5 * 1000);
 
-        applyAuth(profile, connection);
+        applyAuth(profile, connection, securityToken);
 
         connection.connect();
 
@@ -242,7 +249,7 @@ public class ProcessInfoServlet extends HttpServlet {
                 "UTF-8"));
     }
 	
-	private void applyAuth(IDiagramProfile profile, HttpURLConnection connection) {
+	private void applyAuth(IDiagramProfile profile, HttpURLConnection connection, String securityToken) {
         if (profile.getUsr() != null && profile.getUsr().trim().length() > 0
                 && profile.getPwd() != null
                 && profile.getPwd().trim().length() > 0) {
@@ -251,6 +258,10 @@ public class ProcessInfoServlet extends HttpServlet {
             String encodedAuthorization = enc.encode(userpassword.getBytes());
             connection.setRequestProperty("Authorization", "Basic "
                     + encodedAuthorization);
+            if (securityToken != null){
+                connection.setRequestProperty("SAMLResponse", securityToken);
+                connection.setRequestProperty("SAMLResponseEncoded", "true");
+            }
         }
     }
 }

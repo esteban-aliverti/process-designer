@@ -27,7 +27,6 @@ package org.oryxeditor.server;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.JSSourceFile;
-import com.google.javascript.jscomp.PropertyRenamingPolicy;
 import com.google.javascript.jscomp.Result;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -203,7 +202,7 @@ public class EditorHandler extends HttpServlet {
         
         _devMode = Boolean.parseBoolean( System.getProperty(DEV) == null ? config.getInitParameter(DEV) : System.getProperty(DEV) );
         _preProcess = Boolean.parseBoolean( System.getProperty(PREPROCESS) == null ? config.getInitParameter(PREPROCESS) : System.getProperty(PREPROCESS) );
-        _preProcessUseCache = Boolean.parseBoolean( config.getInitParameter(PREPROCESS_USE_CACHE) == null ? config.getInitParameter(PREPROCESS_USE_CACHE) : "false");
+        _preProcessUseCache = Boolean.parseBoolean( config.getInitParameter(PREPROCESS_USE_CACHE) == null ? "false" : config.getInitParameter(PREPROCESS_USE_CACHE));
         _designerVersion = readDesignerVersion(config.getServletContext());
         
         String editor_file = config.
@@ -316,16 +315,13 @@ public class EditorHandler extends HttpServlet {
                         " was registered");
         }
         
-        IDiagramPreprocessingUnit preprocessingUnit = null;
-        //We should synchromnize this block, but the overhead caused by 
-        //synchronization could be worst than the desynchronization problems
-        //themselves.
+        IDiagramPreprocessingUnit preprocessingUnit = _preProcessingService.findPreprocessingUnit(request, profile);
+        //We should synchronize this block (among others :)) 
         if(_preProcess && ((_preProcessUseCache && !_preProcessAlreadyDone) || !_preProcessUseCache)) {
             if (_logger.isInfoEnabled()) {
                 _logger.info(
                     "Performing diagram information pre-processing steps. ");
             }
-            preprocessingUnit = _preProcessingService.findPreprocessingUnit(request, profile);
             preprocessingUnit.preprocess(request, response, profile);
             _preProcessAlreadyDone = true;
         }
@@ -473,6 +469,9 @@ public class EditorHandler extends HttpServlet {
                 }
                 resultHtml.append(ssexts.toString());
                 replacementMade = true;
+            } else if ("securityToken".equals(elt)) {
+                resultHtml.append(request.getParameter("securityToken"));
+                replacementMade = true;
             } else if ("@".equals(elt)) {
                 if (replacementMade) {
                     tokenFound = false;
@@ -580,7 +579,7 @@ public class EditorHandler extends HttpServlet {
             sw.append("/* ").append(plugin.getName()).append(" */\n");
             InputStream input = plugin.getContents();
             try {
-                compileJS(plugin.getName(), input);
+                sw.append(compileJS(plugin.getName(), input));
             } catch (EvaluatorException e) {
                 _logger.error(e.getMessage(), e);
             } catch (IOException e) {
@@ -633,6 +632,9 @@ public class EditorHandler extends HttpServlet {
         List<String> filenames = new ArrayList<String>();
         List<InputStream> codes = new ArrayList<InputStream>();
         
+        filenames.add(filename);
+        codes.add(code);
+        
         return compileJS(filenames, codes);
     }
     
@@ -640,9 +642,6 @@ public class EditorHandler extends HttpServlet {
         com.google.javascript.jscomp.Compiler compiler = new com.google.javascript.jscomp.Compiler();
 
         CompilerOptions options = new CompilerOptions();
-        //options.setPropertyRenaming(PropertyRenamingPolicy.OFF);
-        // Advanced mode is used here, but additional options could be set, too.
-        //CompilationLevel.ADVANCED_OPTIMIZATIONS.setOptionsForCompilationLevel(
         CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(
             options);
 

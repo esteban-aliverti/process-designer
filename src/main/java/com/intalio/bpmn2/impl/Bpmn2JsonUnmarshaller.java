@@ -130,13 +130,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
-import org.jbpm.bpmn2.emfextmodel.EmfextmodelFactory;
-import org.jbpm.bpmn2.emfextmodel.EmfextmodelPackage;
-import org.jbpm.bpmn2.emfextmodel.GlobalType;
-import org.jbpm.bpmn2.emfextmodel.ImportType;
-import org.jbpm.bpmn2.emfextmodel.OnEntryScriptType;
-import org.jbpm.bpmn2.emfextmodel.OnExitScriptType;
-import org.jbpm.bpmn2.emfextmodel.impl.EmfextmodelPackageImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.InvalidSyntaxException;
@@ -144,6 +137,13 @@ import org.osgi.framework.ServiceReference;
 
 import com.intalio.bpmn2.BpmnMarshallerHelper;
 import com.intalio.bpmn2.resource.JBPMBpmn2ResourceFactoryImpl;
+import org.jboss.drools.DroolsFactory;
+import org.jboss.drools.DroolsPackage;
+import org.jboss.drools.GlobalType;
+import org.jboss.drools.ImportType;
+import org.jboss.drools.OnEntryScriptType;
+import org.jboss.drools.OnExitScriptType;
+import org.jboss.drools.impl.DroolsPackageImpl;
 
 /**
  * @author Antoine Toulme
@@ -176,7 +176,7 @@ public class Bpmn2JsonUnmarshaller {
     
     public Bpmn2JsonUnmarshaller() {
         _helpers = new ArrayList<BpmnMarshallerHelper>();
-        EmfextmodelPackageImpl.init();
+        DroolsPackageImpl.init();
         // load the helpers to place them in field
         if (getClass().getClassLoader() instanceof BundleReference) {
             BundleContext context = ((BundleReference) getClass().getClassLoader()).
@@ -1418,7 +1418,7 @@ public class Bpmn2JsonUnmarshaller {
         if(properties.get("onentryactions") != null && properties.get("onentryactions").length() > 0) {
             String[] allActions = properties.get("onentryactions").split( "\\|\\s*" );
             for(String action : allActions) {
-                OnEntryScriptType onEntryScript = EmfextmodelFactory.eINSTANCE.createOnEntryScriptType();
+                OnEntryScriptType onEntryScript = DroolsFactory.eINSTANCE.createOnEntryScriptType();
                 onEntryScript.setScript(action);
                 
                 String scriptLanguage = "";
@@ -1435,7 +1435,7 @@ public class Bpmn2JsonUnmarshaller {
                 ExtensionAttributeValue extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
                 sp.getExtensionValues().add(extensionElement);
                 FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
-                        (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__ON_ENTRY_SCRIPT, onEntryScript);
+                        (Internal) DroolsPackage.Literals.DOCUMENT_ROOT__ON_ENTRY_SCRIPT, onEntryScript);
                 extensionElement.getValue().add(extensionElementEntry);
             }
         }
@@ -1443,7 +1443,7 @@ public class Bpmn2JsonUnmarshaller {
         if(properties.get("onexitactions") != null && properties.get("onexitactions").length() > 0) {
             String[] allActions = properties.get("onexitactions").split( "\\|\\s*" );
             for(String action : allActions) {
-                OnExitScriptType onExitScript = EmfextmodelFactory.eINSTANCE.createOnExitScriptType();
+                OnExitScriptType onExitScript = DroolsFactory.eINSTANCE.createOnExitScriptType();
                 onExitScript.setScript(action);
                 
                 String scriptLanguage = "";
@@ -1460,7 +1460,7 @@ public class Bpmn2JsonUnmarshaller {
                 ExtensionAttributeValue extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
                 sp.getExtensionValues().add(extensionElement);
                 FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
-                        (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__ON_EXIT_SCRIPT, onExitScript);
+                        (Internal) DroolsPackage.Literals.DOCUMENT_ROOT__ON_EXIT_SCRIPT, onExitScript);
                 extensionElement.getValue().add(extensionElementEntry);
             }
         }
@@ -2124,13 +2124,13 @@ public class Bpmn2JsonUnmarshaller {
         if(properties.get("imports") != null && properties.get("imports").length() > 0) {
             String[] allImports = properties.get("imports").split( ",\\s*" );
             for(String importStr : allImports) {
-                ImportType importType = EmfextmodelFactory.eINSTANCE.createImportType();
+                ImportType importType = DroolsFactory.eINSTANCE.createImportType();
                 importType.setName(importStr);
                 
                 extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
                 process.getExtensionValues().add(extensionElement);
                 FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
-                        (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__IMPORT, importType);
+                        (Internal) DroolsPackage.Literals.DOCUMENT_ROOT__IMPORT, importType);
                 extensionElement.getValue().add(extensionElementEntry);
             }
         }
@@ -2141,7 +2141,7 @@ public class Bpmn2JsonUnmarshaller {
             for(String globalStr : allGlobals) {
                 String[] globalParts = globalStr.split( ":\\s*" ); // identifier:type
                 if(globalParts.length == 2) {
-                    GlobalType globalType = EmfextmodelFactory.eINSTANCE.createGlobalType();
+                    GlobalType globalType = DroolsFactory.eINSTANCE.createGlobalType();
                     globalType.setIdentifier(globalParts[0]);
                     globalType.setType(globalParts[1]);
                     if(extensionElement == null) {
@@ -2149,7 +2149,7 @@ public class Bpmn2JsonUnmarshaller {
                     	process.getExtensionValues().add(extensionElement);
                     } 
                     FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
-                            (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__GLOBAL, globalType);
+                            (Internal) DroolsPackage.Literals.DOCUMENT_ROOT__GLOBAL, globalType);
                     extensionElement.getValue().add(extensionElementEntry);
                 }
             }
@@ -2419,7 +2419,7 @@ public class Bpmn2JsonUnmarshaller {
         if(properties.get("onentryactions") != null && properties.get("onentryactions").length() > 0) {
             String[] allActions = properties.get("onentryactions").split( "\\|\\s*" );
             for(String action : allActions) {
-                OnEntryScriptType onEntryScript = EmfextmodelFactory.eINSTANCE.createOnEntryScriptType();
+                OnEntryScriptType onEntryScript = DroolsFactory.eINSTANCE.createOnEntryScriptType();
                 onEntryScript.setScript(action);
                 
                 String scriptLanguage = "";
@@ -2436,7 +2436,7 @@ public class Bpmn2JsonUnmarshaller {
                 ExtensionAttributeValue extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
                 callActivity.getExtensionValues().add(extensionElement);
                 FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
-                        (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__ON_ENTRY_SCRIPT, onEntryScript);
+                        (Internal) DroolsPackage.Literals.DOCUMENT_ROOT__ON_ENTRY_SCRIPT, onEntryScript);
                 extensionElement.getValue().add(extensionElementEntry);
             }
         }
@@ -2444,7 +2444,7 @@ public class Bpmn2JsonUnmarshaller {
         if(properties.get("onexitactions") != null && properties.get("onexitactions").length() > 0) {
             String[] allActions = properties.get("onexitactions").split( "\\|\\s*" );
             for(String action : allActions) {
-                OnExitScriptType onExitScript = EmfextmodelFactory.eINSTANCE.createOnExitScriptType();
+                OnExitScriptType onExitScript = DroolsFactory.eINSTANCE.createOnExitScriptType();
                 onExitScript.setScript(action);
                 
                 String scriptLanguage = "";
@@ -2461,7 +2461,7 @@ public class Bpmn2JsonUnmarshaller {
                 ExtensionAttributeValue extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
                 callActivity.getExtensionValues().add(extensionElement);
                 FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
-                        (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__ON_EXIT_SCRIPT, onExitScript);
+                        (Internal) DroolsPackage.Literals.DOCUMENT_ROOT__ON_EXIT_SCRIPT, onExitScript);
                 extensionElement.getValue().add(extensionElementEntry);
             }
         }
@@ -2719,7 +2719,7 @@ public class Bpmn2JsonUnmarshaller {
         if(properties.get("onentryactions") != null && properties.get("onentryactions").length() > 0) {
             String[] allActions = properties.get("onentryactions").split( "\\|\\s*" );
             for(String action : allActions) {
-                OnEntryScriptType onEntryScript = EmfextmodelFactory.eINSTANCE.createOnEntryScriptType();
+                OnEntryScriptType onEntryScript = DroolsFactory.eINSTANCE.createOnEntryScriptType();
                 onEntryScript.setScript(action);
                 
                 String scriptLanguage = "";
@@ -2736,7 +2736,7 @@ public class Bpmn2JsonUnmarshaller {
                 ExtensionAttributeValue extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
                 task.getExtensionValues().add(extensionElement);
                 FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
-                        (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__ON_ENTRY_SCRIPT, onEntryScript);
+                        (Internal) DroolsPackage.Literals.DOCUMENT_ROOT__ON_ENTRY_SCRIPT, onEntryScript);
                 extensionElement.getValue().add(extensionElementEntry);
             }
         }
@@ -2744,7 +2744,7 @@ public class Bpmn2JsonUnmarshaller {
         if(properties.get("onexitactions") != null && properties.get("onexitactions").length() > 0) {
             String[] allActions = properties.get("onexitactions").split( "\\|\\s*" );
             for(String action : allActions) {
-                OnExitScriptType onExitScript = EmfextmodelFactory.eINSTANCE.createOnExitScriptType();
+                OnExitScriptType onExitScript = DroolsFactory.eINSTANCE.createOnExitScriptType();
                 onExitScript.setScript(action);
                 
                 String scriptLanguage = "";
@@ -2761,7 +2761,7 @@ public class Bpmn2JsonUnmarshaller {
                 ExtensionAttributeValue extensionElement = Bpmn2Factory.eINSTANCE.createExtensionAttributeValue();
                 task.getExtensionValues().add(extensionElement);
                 FeatureMap.Entry extensionElementEntry = new SimpleFeatureMapEntry(
-                        (Internal) EmfextmodelPackage.Literals.DOCUMENT_ROOT__ON_EXIT_SCRIPT, onExitScript);
+                        (Internal) DroolsPackage.Literals.DOCUMENT_ROOT__ON_EXIT_SCRIPT, onExitScript);
                 extensionElement.getValue().add(extensionElementEntry);
             }
         }

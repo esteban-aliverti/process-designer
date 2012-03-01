@@ -73,7 +73,8 @@ ORYX.Plugins.ShapeRepository = {
             },
             params: {
             	profile: ORYX.PROFILE,
-            	uuid : ORYX.UUID
+            	uuid : ORYX.UUID,
+                securityToken: ORYX.SECURITY_TOKEN
             }
         });
 		
@@ -328,7 +329,6 @@ ORYX.Plugins.ShapeRepository = {
 	},
 
 	beforeDragOver: function(dragZone, target, event){
-
 		var coord = this.facade.eventCoordinates(event.browserEvent);
 		var aShapes = this.facade.getCanvas().getAbstractShapesAtPosition( coord );
 

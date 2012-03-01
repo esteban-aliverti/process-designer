@@ -22,6 +22,10 @@
 		
 		<text font-size="12" x="41" y="41" id="name" oryx:align="middle center" oryx:fittoelem="unvisibleBorder" stroke="black"></text>		
                 
-                <image oryx:anchors="top" x="2" y="2" width="20" height="20" xlink:href="../icons/activity/sendEmail.png" />
+                $cohortDefs:{ch| 
+                    <g id="$ch.name$" display="none">
+                        <image oryx:anchors="top" x="31" y="2" width="20" height="20" xlink:href="$ch.iconSource$" />
+                    </g>    
+                }$
 	</g>
 </svg>

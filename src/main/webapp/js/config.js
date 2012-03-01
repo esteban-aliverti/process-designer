@@ -43,7 +43,7 @@ ORYX.CONFIG.UUID_URL = function(uuid, profile) {
   if (profile === undefined) {
     profile = ORYX.PROFILE;
   }
-  return ORYX.PATH + "uuidRepository?uuid="+ uuid + "&profile=" + profile + "&pp=" + ORYX.PREPROCESSING;
+  return ORYX.PATH + "uuidRepository?uuid="+ uuid + "&profile=" + profile + "&pp=" + ORYX.PREPROCESSING+ "&securityToken="+ORYX.SECURITY_TOKEN;
 };
 
 ORYX.CONFIG.TRANSFORMER_URL = function(uuid, profile) {
@@ -53,7 +53,7 @@ ORYX.CONFIG.TRANSFORMER_URL = function(uuid, profile) {
    if (profile === undefined) {
       profile = ORYX.PROFILE;
    }
-   return ORYX.PATH + "transformer?uuid="+ uuid + "&profile=" + profile;
+   return ORYX.PATH + "transformer?uuid="+ uuid + "&profile=" + profile+ "&securityToken="+ORYX.SECURITY_TOKEN;
 };
 
 ORYX.CONFIG.TASKFORMS_URL = function(uuid, profile) {
@@ -63,7 +63,7 @@ ORYX.CONFIG.TASKFORMS_URL = function(uuid, profile) {
 	if (profile === undefined) {
 	   profile = ORYX.PROFILE;
 	}
-	return ORYX.PATH + "taskforms?uuid="+ uuid + "&profile=" + profile;
+	return ORYX.PATH + "taskforms?uuid="+ uuid + "&profile=" + profile+ "&securityToken="+ORYX.SECURITY_TOKEN;
 };
 ORYX.CONFIG.UUID_AUTOSAVE_INTERVAL = 120000;
 ORYX.CONFIG.UUID_AUTOSAVE_DEFAULT = false;

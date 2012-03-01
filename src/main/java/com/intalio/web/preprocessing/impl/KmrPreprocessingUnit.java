@@ -42,8 +42,6 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.apache.commons.io.FileUtils;
@@ -87,6 +85,9 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
     private String workitemSVGFilePath;
     private String origWorkitemSVGFile;
     private String modelSVGFilePath;
+    private String cohortSVGFilePath;
+    private String origCohortSVGFile;
+    private String generatedCohortSVGFile;
     private String origModelSVGFile;
     private IDiagramProfile profile;
 
@@ -101,6 +102,9 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         origWorkitemSVGFile = workitemSVGFilePath + "workitem.orig";
         modelSVGFilePath = stencilPath + "/kmr/view/model/dynamic/";
         origModelSVGFile = modelSVGFilePath + "model.orig";
+        cohortSVGFilePath = stencilPath + "/kmr/view/model/";
+        origCohortSVGFile = cohortSVGFilePath + "dynamic/cohort.orig";
+        generatedCohortSVGFile = cohortSVGFilePath + "/cohort.svg";
         
         
     }
@@ -117,13 +121,13 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
     public void preprocess(HttpServletRequest req, HttpServletResponse res, IDiagramProfile profile) {
         String uuid = req.getParameter("uuid");
         String[] wsUuids = req.getParameterValues("wsUuid");
+        String securityToken = req.getParameter("securityToken");
 
         this.profile = profile;
-        
         guvnorBaseURL = ExternalInfo.getExternalProtocol(profile) + "://" + ExternalInfo.getExternalHost(profile)
                 + "/" + profile.getExternalLoadURLSubdomain().substring(0, profile.getExternalLoadURLSubdomain().indexOf("/"));
         
-        guvnorHelper = new AbderaGuvnorHelper(guvnorBaseURL);
+        guvnorHelper = new AbderaGuvnorHelper(guvnorBaseURL, securityToken);
 
         List<String> wsUuidsList = wsUuids == null ? new ArrayList<String>() : Arrays.asList(wsUuids);
 
@@ -152,6 +156,9 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
                 //concatenate outData
                 outData += workDefinitionImpl.getName() + ",";
 
+                //add security token to urls
+                //workDefinitionImpl.setIcon(workDefinitionImpl.getIcon()+"?securityToken="+securityToken+"&SAMLResponseEncoded=true");
+                
                 //convert from List<WorkDefinitionImpl> to Map<String,WorkDefinitionImpl>
                 //so it can be used in template
                 workDefinitions.put(workDefinitionImpl.getName(), workDefinitionImpl);
@@ -164,7 +171,12 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         Collections.sort(workingSetsClassNames);
         
         //get all the Cohort Types from the package
-        Map<String, Set<String>> cohortTemplateData = new CohortPreprocessor(packageName, guvnorHelper).getCohortTemplateData();
+        List<CohortDefinition> cohortTemplateData = new ArrayList<CohortDefinition>(); 
+        try{        
+            cohortTemplateData = new CohortPreprocessor(packageName, guvnorHelper, stencilPath).getCohortTemplateData();
+        } catch (Exception e) {
+            _logger.error("Failed to setup Cohort Configuration Facts",e);
+        }
         
         // parse the profile json to include config data
         try {
@@ -209,6 +221,9 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
 
         // create and parse the view svg to include Model data
         //createAndParseModelSVGs(packageName, workingSetsClassNames);
+        
+        // create the cohort.svg file
+        createAndParseCohortSVG(cohortTemplateData);
     }
 
     @SuppressWarnings("unchecked")
@@ -230,6 +245,30 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
         } catch (Exception e) {
             _logger.error("Failed to setup workitem svg images : " + e.getMessage());
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void createAndParseCohortSVG(List<CohortDefinition> definitions) {
+        try {
+            // first delete previous svg
+            deletefile(generatedCohortSVGFile);
+            
+            //only use definitions that have a valid iconSource attribute
+            List<CohortDefinition> validDefinitions = new ArrayList<CohortDefinition>();
+            for (CohortDefinition cohortDefinition : definitions) {
+                if (cohortDefinition.getIconSource() != null){
+                    validDefinitions.add(cohortDefinition);
+                }
+            }
+            
+            StringTemplate cohortTemplate = new StringTemplate(readFile(origCohortSVGFile));
+            cohortTemplate.setAttribute("cohortDefs", validDefinitions);
+            createAndWriteToFile(generatedCohortSVGFile, cohortTemplate.toString());
+            
+        } catch (Exception ex) {
+            _logger.error("Failed to setup Cohort svg image : " + ex.getMessage());
+        }
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -462,58 +501,7 @@ public class KmrPreprocessingUnit implements IDiagramPreprocessingUnit {
 
         //for each working-set we need to get the classes names they define
         for (Entry workingSetEntry : workingSetEntries) {
-            result.addAll(this.getClassNamesFromWorkingSetEntry(workingSetEntry));
-        }
-
-        return result;
-    }
-
-    private Set<String> getClassNamesFromWorkingSetEntry(Entry workingSetEntry) {
-        Set<String> result = new HashSet<String>();
-
-        //get the url of WS's binary content
-        String binaryURL = workingSetEntry.getContentSrc().toString();
-
-        if (binaryURL == null || binaryURL.isEmpty()) {
-            throw new IllegalArgumentException("Working Set Entry doesn't have any binary URL");
-        }
-
-        ClientResponse resp = null;
-
-        try{
-            resp = guvnorHelper.invokeGET(binaryURL, "application/octet-stream");
-        } catch (Exception e){
-            throw new IllegalStateException("Error occurred when retrieving Working Sets from package: ", e);
-        }
-        
-        try {
-            XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLStreamReader reader = factory.createXMLStreamReader(resp.getInputStream());
-
-            boolean parsingValidFacts = false;
-            boolean continueParsing = true;
-            while (reader.hasNext() && continueParsing) {
-                switch (reader.next()) {
-                    case XMLStreamReader.START_ELEMENT:
-                        if ("validFacts".equals(reader.getLocalName())) {
-                            parsingValidFacts = true;
-                        }
-                        if ("string".equals(reader.getLocalName()) && parsingValidFacts) {
-                            result.add(reader.getElementText());
-                        }
-                        break;
-                    case XMLStreamReader.END_ELEMENT:
-                        parsingValidFacts = false;
-                        if ("validFacts".equals(reader.getLocalName())) {
-                            //don't accept nested WorkingSets
-                            continueParsing = false;
-                        }
-                        break;
-                }
-            }
-        } catch (Exception e) {
-            // we dont want to barf..just log that error happened
-            _logger.error(e.getMessage());
+            result.addAll(GuvnorAtomHelper.getClassNamesFromWorkingSetEntry(workingSetEntry, guvnorHelper));
         }
 
         return result;

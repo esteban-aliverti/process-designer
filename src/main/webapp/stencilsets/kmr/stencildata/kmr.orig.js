@@ -2918,15 +2918,15 @@
                 
                 
                 //Cohort Classes
-                $cohortDefs.keys:{ch| 
+                $cohortDefs:{ch| 
                     \{
                         "type" : 		"node",
-			"id" :			"Cohort_$ch$",
-			"title" :		"$ch$",
-			"groups" :		["Cohort"],
-			"view" :		"model/cohort.fixed.svg",
-			"icon" :		"model/fact.type.png",
-                        "description" :         "$ch$ Element",
+			"id" :			"Cohort_$ch.name$",
+			"title" :		"$ch.name$",
+			"groups" :		["Configuration"],
+			"view" :		"model/cohort.svg",
+			"icon" :		"model/$ch.iconName$",
+                        "description" :         "$ch.name$ Element",
 			"defaultAlign" :	"southeast",
 			"propertyPackages":	[
                             "baseAttributes",
@@ -2934,20 +2934,20 @@
 				"artifact"
 			],
                         "properties" :		[
-                            $cohortDefs.(ch):{field|
+                            $ch.fields:{field|
                             \{
-                                "id":"cohortProperty_$field$", 
+                                "id":"cohortProperty_$field.name$", 
                                 "type":"String",
-                                "title":"$field$",
+                                "title":"$field.name$",
                                 "value":"",
                                 "readonly":false,
                                 "optional":true
                             \},
                             \{
-                                "id":"$field$_name", 
+                                "id":"$field.name$_name", 
                                 "type":"String",
-                                "title":"$field$",
-                                "value":"$field$",
+                                "title":"$field.name$",
+                                "value":"$field.name$",
                                 "readonly":true,
                                 "optional":false,
                                 "visible":false
@@ -2957,12 +2957,21 @@
                                 "id":"cohortentity",
                                 "type":"String",
                                 "title":"Entity",
-                                "value":"$ch$",
+                                "value":"$ch.name$",
                                 "readonly":true,
                                 "optional":false,
                                 "refToView":"name"
                             \},
-                            
+                            \{
+                                "id":"icon",
+                                "type":"Boolean",
+                                "title":"Icon",
+                                "value":"$if(ch.iconSource)$true$else$false$endif$",
+                                "readonly":true,
+                                "optional":false,
+                                "visible":true,
+                                "refToView":"$ch.name$"
+                            \}
                         ],
 			"roles" : [
 				"all"

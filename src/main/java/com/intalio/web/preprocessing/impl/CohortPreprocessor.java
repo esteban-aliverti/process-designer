@@ -4,12 +4,17 @@
  */
 package com.intalio.web.preprocessing.impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import org.apache.abdera.model.Document;
@@ -26,47 +31,78 @@ public class CohortPreprocessor {
     private static final Logger _logger =
             Logger.getLogger(CohortPreprocessor.class);
     
-    public static final String COHORT_DEFINITION_EXT = "cht";
-    public static final String COHORT_TYPE_DEFINITION_TAG = "cohortType";
+    public static final String COHORT_WORKING_SET_NAME = "Configuration Facts";
+    
+    public static final String COHORT_DEFINITION_EXT = "modelDescriptor.attached";
+    public static final String COHORT_TYPE_DEFINITION_TAG = "factType";
     public static final String COHORT_TYPE_DEFINITION_CLASS_ATTRIBUTE = "class";
     public static final String COHORT_FIELD_DEFINITION_TAG = "field";
     public static final String COHORT_FIELD_DEFINITION_NAME_ATTRIBUTE = "name";
     
     private String packageName;
+    private String stencilPath;
     private AbderaGuvnorHelper guvnorHelper;
 
-    public CohortPreprocessor(String packageName, AbderaGuvnorHelper guvnorHelper) {
+    public CohortPreprocessor(String packageName, AbderaGuvnorHelper guvnorHelper, String stencilPath) {
         this.packageName = packageName;
         this.guvnorHelper = guvnorHelper;
+        this.stencilPath = stencilPath;
     }
     
     /**
-     * Returns a Map containing each Class (the key of the Map) defined in all
-     * the cht elements present in Guvnor. The value of the Map are the fields
-     * of each of the classes.
+     * Returns the Cohort elements defined in all
+     * the cht elements present in Guvnor.
      * @return 
      */
-    public Map<String, Set<String>> getCohortTemplateData(){
+    public List<CohortDefinition> getCohortTemplateData() throws IOException{
         
-        List<String> cohortURLs = this.getCohortURLs();
-        if (cohortURLs.isEmpty()){
-            return new HashMap<String, Set<String>>();
+        Set<String> cohortNames = this.getCohortNames();
+        return this.getFactTypesDescriptors(cohortNames);
+    }
+    
+    
+    
+    private Set<String> getCohortNames(){
+        
+        Set<String> workingSetClasses = new HashSet<String>();
+        
+        String cohortWorkingSetURL = "/rest/packages/" + packageName + "/assets/"+COHORT_WORKING_SET_NAME;
+        
+        ClientResponse resp = null;
+
+        try{
+            resp = guvnorHelper.invokeGETGuvnor(cohortWorkingSetURL, "application/atom+xml");
+            Document<Entry> document = resp.getDocument();
+        
+            workingSetClasses = GuvnorAtomHelper.getClassNamesFromWorkingSetEntry(document.getRoot(), guvnorHelper);
+        } catch (Exception e){
+            throw new IllegalStateException("Error occurred when retrieving "+COHORT_WORKING_SET_NAME+" from package: "+packageName, e);
+        }
+
+        return workingSetClasses;
+    } 
+    
+    private List<CohortDefinition> getFactTypesDescriptors(Set<String> validTypes) throws IOException{
+        
+        List<CohortDefinition> result = new ArrayList<CohortDefinition>();
+        List<String> factTypesDescriptorsURLs = this.getFactTypesDescriptorsURLs();
+        
+        for (String url : factTypesDescriptorsURLs) {
+            result.addAll(this.getCohortContent(url, validTypes));
         }
         
-        Map<String, Set<String>> result = new HashMap<String, Set<String>>();
-        for (String url : cohortURLs) {
-            result.putAll(this.getCohortContent(url));
-        }
+        Collections.sort(result, new Comparator<CohortDefinition>(){
+
+            public int compare(CohortDefinition o1, CohortDefinition o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+            
+        });
         
         return result;
     }
     
-    /**
-     * Gets all the .cht entries from Guvnor and creates a list with their binary
-     * URLs
-     * @return 
-     */
-    private List<String> getCohortURLs(){
+    private List<String> getFactTypesDescriptorsURLs(){
         String processesURL = "/rest/packages/" + packageName + "/assets?format="+COHORT_DEFINITION_EXT;
 
         ClientResponse resp = null;
@@ -74,25 +110,24 @@ public class CohortPreprocessor {
         try{
             resp = guvnorHelper.invokeGETGuvnor(processesURL, "application/atom+xml");
         } catch (Exception e){
-            throw new IllegalStateException("Error occurred when retrieving Cohort Entries from package: "+packageName, e);
+            throw new IllegalStateException("Error occurred when retrieving FactTypesDescriptors from package: "+packageName, e);
         }
 
         Document<Feed> document = resp.getDocument();
         
-        List<String> cohortSourceURLs = new ArrayList<String>();
+        List<String> factTypesDescriptorsSourceURLs = new ArrayList<String>();
         for (Entry entry : document.getRoot().getEntries()) {
-            cohortSourceURLs.add(entry.getContentSrc().toString());
+            try {
+                factTypesDescriptorsSourceURLs.add(URLDecoder.decode(entry.getContentSrc().toString(), "UTF-8"));
+            } catch (UnsupportedEncodingException ex) {
+            }
         }
         
-        return cohortSourceURLs;
+        return factTypesDescriptorsSourceURLs;
     }
     
-    /**
-     * Retrieves and parses the content of a cohort entry.
-     * @return 
-     */
-    private Map<String,Set<String>> getCohortContent(String url){
-        Map<String,Set<String>> data = new HashMap<String,Set<String>>();
+    private List<CohortDefinition> getCohortContent(String url, Set<String> validTypes){
+        List<CohortDefinition> data = new ArrayList<CohortDefinition>();
         
         ClientResponse resp = null;
         try{
@@ -138,7 +173,33 @@ public class CohortPreprocessor {
                             if(typeClass.contains(".")){
                                 typeClass = typeClass.substring(typeClass.lastIndexOf(".")+1, typeClass.length());
                             }
-                            data.put(typeClass, typeClassFields);
+                            
+                            //Create the cohort Definition
+                            CohortDefinition cohort = new CohortDefinition();
+                            cohort.setName(typeClass);
+                            
+                            //if an png file with the same name as the cohort 
+                            //definitions exists under stencilsets/kmr/icons/model
+                            //then the iconSrc value is set
+                            if (new File(stencilPath+"/kmr/icons/model/"+typeClass+".png").exists()){
+                                cohort.setIconSource("../icons/model/"+typeClass+".png");
+                                cohort.setIconName(typeClass+".png");
+                            }else{
+                                //default values
+                                cohort.setIconSource(null);
+                                cohort.setIconName("cohort.type.png");
+                            }
+                            
+                            //set the fields
+                            for (String fieldName : typeClassFields) {
+                                CohortFieldDefinition field = new CohortFieldDefinition();
+                                field.setName(fieldName);
+                                cohort.addField(field);
+                            }
+                            
+                            if (validTypes == null || validTypes.isEmpty() || validTypes.contains(cohort.getName())){
+                                data.add(cohort);
+                            }
                             typeClass = null;
                             typeClassFields = null;
                         }
@@ -152,4 +213,5 @@ public class CohortPreprocessor {
         
         return data;
     }
+    
 }
