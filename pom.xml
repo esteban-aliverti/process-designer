@@ -3,8 +3,31 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.drools</groupId>
   <artifactId>process-designer</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>2.1.0-SNAPSHOT</version>
   <packaging>war</packaging>
+  
+  <description>Designer</description>
+  <url>https://github.com/tsurdilo/process-designer</url>
+  <developers>
+    <developer>
+      <id>tsurdilo</id>
+      <name>Tihomir Surdilovic</name>
+      <email>tsurdilo@redhat.com</email>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <scm>
+  	<connection>scm:git:git@github.com:tsurdilo/process-designer.git</connection>
+    <developerConnection>scm:git:git@github.com:tsurdilo/process-designer.git</developerConnection>
+    <url>https://github.com/tsurdilo/process-designer</url>
+  </scm>
   
   <properties>
     <mvel.version>2.1.0.drools4</mvel.version>
@@ -14,11 +37,21 @@
   </properties>
 
     <dependencies>
-      <!-- jBPM/Drools dependencies -->
+      <!-- jBPM -->
       <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
         <version>${mvel.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bpmn2</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-flow</artifactId>
+        <version>${jbpm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
@@ -41,13 +74,30 @@
       </dependency>
       <dependency>
         <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-bpmn2-emfextmodel</artifactId>
+        <artifactId>jbpm-human-task</artifactId>
         <version>${jbpm.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-persistence-jpa</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-workitems</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-bpmn2-emfextmodel</artifactId>
+        <version>${jbpm.version}</version>
+      </dependency>
+      
+      <!-- jBPM Migration -->
+      <dependency>
         <groupId>org.jbpm.jbpm5</groupId>
         <artifactId>jbpmmigration</artifactId>
-        <version>0.10-SNAPSHOT</version>
+        <version>0.11</version>
         <exclusions>
           <exclusion>
             <groupId>log4j</groupId>
@@ -71,6 +121,8 @@
           </exclusion>
         </exclusions>
       </dependency>
+      
+      <!--  Drools -->
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-core</artifactId>
@@ -79,6 +131,11 @@
       <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-compiler</artifactId>
+        <version>${drools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-persistence-jpa</artifactId>
         <version>${drools.version}</version>
       </dependency>
       
@@ -93,7 +150,7 @@
       <dependency>
         <groupId>org.eclipse</groupId>
         <artifactId>org.eclipse.bpmn2</artifactId>
-        <version>0.7.0.009</version>
+        <version>0.7.0.010</version>
       </dependency>
 
       <!-- war libs -->
@@ -480,9 +537,9 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <bundle-Name>Process Designer</bundle-Name>
-              <bundle-Version>${project.version}</bundle-Version>
-              <bundle-SymbolicName>designer</bundle-SymbolicName>
+              <Bundle-Name>Process Designer</Bundle-Name>
+              <Bundle-Version>${project.version}</Bundle-Version>
+              <Bundle-SymbolicName>designer</Bundle-SymbolicName>
             </manifestEntries>
           </archive>
         </configuration>
@@ -581,5 +638,18 @@
       </snapshots>
     </repository>
   </repositories>
+  
+  <distributionManagement>
+	<repository>
+    	<id>jboss-releases-repository</id>
+        <name>JBoss Releases Repository</name>
+        <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+    	<id>jboss-snapshots-repository</id>
+       	<name>JBoss Snapshots Repository</name>
+       	<url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
 

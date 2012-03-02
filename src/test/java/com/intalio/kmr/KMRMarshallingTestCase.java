@@ -1,7 +1,7 @@
 package com.intalio.kmr;
 
 
-import com.intalio.bpmn2.impl.KMRJsonMarshaller;
+import org.jbpm.designer.kmr.impl.newpackage.KMRJsonMarshaller;
 import java.io.File;
 import java.net.URL;
 import java.util.Collections;
@@ -9,7 +9,7 @@ import java.util.Collections;
 import org.eclipse.bpmn2.Definitions;
 import org.junit.Test;
 
-import com.intalio.bpmn2.impl.KMRJsonUnmarshaller;
+import org.jbpm.designer.kmr.impl.KMRJsonUnmarshaller;
 import com.intalio.web.profile.IDiagramProfile;
 import com.intalio.web.profile.IDiagramProfile.IDiagramMarshaller;
 import com.intalio.web.profile.IDiagramProfile.IDiagramUnmarshaller;

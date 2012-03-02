@@ -45,12 +45,11 @@ ORYX.Plugins.PropertyWindow = {
 		this.facade = facade;
 
 		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_SHOW_PROPERTYWINDOW, this.init.bind(this));
-		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_LOADED, this.selectDiagram.bind(this));
+		this.facade.registerOnEvent(ORYX.CONFIG.EVENT_LOADED, this.onSelectionChanged.bind(this));
 		this.init();
 	},
 	
 	init: function(){
-
 		// The parent div-node of the grid
 		this.node = ORYX.Editor.graft("http://www.w3.org/1999/xhtml",
 			null,
@@ -180,7 +179,7 @@ ORYX.Plugins.PropertyWindow = {
 		this.identifyCommonProperties();
 		this.createProperties();
 	},
-
+	
 	specialKeyDown: function(field, event) {
 		// If there is a TextArea and the Key is an Enter
 		if(field instanceof Ext.form.TextArea && event.button == ORYX.CONFIG.KEY_Code_enter) {
@@ -195,7 +194,6 @@ ORYX.Plugins.PropertyWindow = {
 	},
 	
 	renderer: function(value, p, record) {
-		
 		this.tooltipRenderer(value, p, record);
 		
 		if (record.data.gridProperties.labelProvider) {
@@ -231,7 +229,6 @@ ORYX.Plugins.PropertyWindow = {
 	},
 
 	beforeEdit: function(option) {
-
 		var editorGrid 		= this.dataSource.getAt(option.row).data.gridProperties.editor;
 		var editorRenderer 	= this.dataSource.getAt(option.row).data.gridProperties.renderer;
 
@@ -321,7 +318,6 @@ ORYX.Plugins.PropertyWindow = {
 	
 	// Changes made in the property window will be shown directly
 	editDirectly:function(key, value){
-		
 		this.shapeSelection.shapes.each(function(shape){
 			if(!shape.getStencil().property(key).readonly()) {
 				shape.setProperty(key, value);
@@ -474,7 +470,11 @@ ORYX.Plugins.PropertyWindow = {
 		this.shapeSelection.shapes = event.elements;
 		
 		/* Case: nothing selected */
-		if(event.elements.length == 0) {
+		if(event.elements) {
+			if(event.elements.length == 0) {
+				this.shapeSelection.shapes = [this.facade.getCanvas()];
+			}
+		} else {
 			this.shapeSelection.shapes = [this.facade.getCanvas()];
 		}
 		
@@ -488,7 +488,6 @@ ORYX.Plugins.PropertyWindow = {
 		this.setCommonPropertiesValues();
 		
 		// Create the Properties
-		
 		this.createProperties();
 	},
 	
@@ -668,6 +667,94 @@ ORYX.Plugins.PropertyWindow = {
 							editorGrid = new Ext.Editor(cf);
 							break;
 
+						case ORYX.CONFIG.TYPE_VARDEF:
+
+							var cf = new Ext.form.ComplexVardefField({
+								allowBlank: pair.optional(),
+								dataSource:this.dataSource,
+								grid:this.grid,
+								row:index,
+								facade:this.facade
+							});
+							cf.on('dialogClosed', this.dialogClosed, {scope:this, row:index, col:1,field:cf});							
+							editorGrid = new Ext.Editor(cf);
+							break;
+							
+						case ORYX.CONFIG.TYPE_ACTION:
+							var cf = new Ext.form.ComplexActionsField({
+								allowBlank: pair.optional(),
+								dataSource:this.dataSource,
+								grid:this.grid,
+								row:index,
+								facade:this.facade
+							});
+							cf.on('dialogClosed', this.dialogClosed, {scope:this, row:index, col:1,field:cf});							
+							editorGrid = new Ext.Editor(cf);
+							break;
+						
+						case ORYX.CONFIG.TYPE_GLOBAL:
+							var cf = new Ext.form.ComplexGlobalsField({
+								allowBlank: pair.optional(),
+								dataSource:this.dataSource,
+								grid:this.grid,
+								row:index,
+								facade:this.facade
+							});
+							cf.on('dialogClosed', this.dialogClosed, {scope:this, row:index, col:1,field:cf});							
+							editorGrid = new Ext.Editor(cf);
+							break;
+							
+						case ORYX.CONFIG.TYPE_IMPORT:
+							var cf = new Ext.form.ComplexImportsField({
+								allowBlank: pair.optional(),
+								dataSource:this.dataSource,
+								grid:this.grid,
+								row:index,
+								facade:this.facade
+							});
+							cf.on('dialogClosed', this.dialogClosed, {scope:this, row:index, col:1,field:cf});							
+							editorGrid = new Ext.Editor(cf);
+							break;
+						
+						case ORYX.CONFIG.TYPE_DATAINPUT:
+							var cf = new Ext.form.ComplexDataInOutField({
+								allowBlank: pair.optional(),
+								dataSource:this.dataSource,
+								grid:this.grid,
+								row:index,
+								facade:this.facade,
+								dtype: 'Data Input'
+							});
+							cf.on('dialogClosed', this.dialogClosed, {scope:this, row:index, col:1,field:cf});							
+							editorGrid = new Ext.Editor(cf);
+							break;
+							
+						case ORYX.CONFIG.TYPE_DATAOUTPUT:
+							var cf = new Ext.form.ComplexDataInOutField({
+								allowBlank: pair.optional(),
+								dataSource:this.dataSource,
+								grid:this.grid,
+								row:index,
+								facade:this.facade,
+								dtype: 'Data Output'
+							});
+							cf.on('dialogClosed', this.dialogClosed, {scope:this, row:index, col:1,field:cf});							
+							editorGrid = new Ext.Editor(cf);
+							break;
+							
+						case ORYX.CONFIG.TYPE_DATAASSIGNMENT:
+							var cf = new Ext.form.ComplexDataAssignmenField({
+								allowBlank: pair.optional(),
+								dataSource:this.dataSource,
+								grid:this.grid,
+								row:index,
+								facade:this.facade,
+								shapes:this.shapeSelection.shapes
+							});
+							cf.on('dialogClosed', this.dialogClosed, {scope:this, row:index, col:1,field:cf});							
+							editorGrid = new Ext.Editor(cf);
+							break;
+							
 							// extended by Kerstin (start)
 						case ORYX.CONFIG.TYPE_COMPLEX:
 
@@ -1176,6 +1263,7 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 				buttons: [{
 	                text: ORYX.I18N.PropertyWindow.ok,
 	                handler: function(){
+	                	this.grid.getView().refresh();
 	                    this.grid.stopEditing();	
 						// store dialog input
 						this.data = this.buildValue();
@@ -1207,9 +1295,6 @@ Ext.extend(Ext.form.ComplexListField, Ext.form.TriggerField,  {
 		
 	}
 });
-
-
-
 
 
 Ext.form.ComplexTextField = Ext.extend(Ext.form.TriggerField,  {
@@ -1266,11 +1351,1028 @@ Ext.form.ComplexTextField = Ext.extend(Ext.form.TriggerField,  {
 			buttons		: [{
                 text: ORYX.I18N.PropertyWindow.ok,
                 handler: function(){	 
-					// store dialog input
+                	// store dialog input
 					var value = grid.getValue();
 					this.setValue(value);
 					
 					this.dataSource.getAt(this.row).set('value', value)
+					this.dataSource.commitChanges()
+
+					dialog.hide()
+                }.bind(this)
+            }, {
+                text: ORYX.I18N.PropertyWindow.cancel,
+                handler: function(){
+					this.setValue(this.value);
+                	dialog.hide()
+                }.bind(this)
+            }]
+		});		
+				
+		dialog.show();		
+		grid.render();
+
+		this.grid.stopEditing();
+		grid.focus( false, 100 );
+		
+	}
+});
+
+Ext.form.ComplexDataInOutField = Ext.extend(Ext.form.TriggerField,  {
+	/**
+     * If the trigger was clicked a dialog has to be opened
+     * to enter the values for the complex property.
+     */
+    onTriggerClick : function() {
+    	if(this.disabled){
+            return;
+        }
+    	
+    	var DataInOutDef = Ext.data.Record.create([{
+            name: 'data'
+        }]);
+    	
+    	var datainoutProxy = new Ext.data.MemoryProxy({
+            root: []
+        });
+    	
+    	var datainouts = new Ext.data.Store({
+    		autoDestroy: true,
+            reader: new Ext.data.JsonReader({
+                root: "root"
+            }, DataInOutDef),
+            proxy: datainoutProxy,
+            sorters: [{
+                property: 'data',
+                direction:'ASC'
+            }]
+        });
+    	datainouts.load();
+    	
+    	if(this.value.length > 0) {
+    		var valueParts = this.value.split(",");
+    		for(var i=0; i < valueParts.length; i++) {
+    			var nextPart = valueParts[i];
+    			datainouts.add(new DataInOutDef({
+                    data: nextPart
+                }));
+    		}
+    	}
+    	
+    	var itemDeleter = new Extensive.grid.ItemDeleter();
+    	
+    	var gridId = Ext.id();
+    	var grid = new Ext.grid.EditorGridPanel({
+            store: datainouts,
+            id: gridId,
+            stripeRows: true,
+            cm: new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), {
+            	id: 'data',
+                header: this.dtype, 
+                width: 250,
+                dataIndex: 'data',
+                editor: new Ext.form.TextField({ allowBlank: false })
+            },itemDeleter]),
+    		selModel: itemDeleter,
+            autoHeight: true,
+            tbar: [{
+                text: 'Add ' + this.dtype,
+                handler : function(){
+                	datainouts.add(new DataInOutDef({
+                        data: ''
+                    }));
+                	grid.fireEvent('cellclick', grid, datainouts.getCount()-1, 1, null);
+                }
+            }],
+            clicksToEdit: 1
+        });
+    	
+    	var dialog = new Ext.Window({ 
+			layout		: 'anchor',
+			autoCreate	: true, 
+			title		: 'Editor for ' + this.dtype + "s", 
+			height		: 300, 
+			width		: 360, 
+			modal		: true,
+			collapsible	: false,
+			fixedcenter	: true, 
+			shadow		: true, 
+			resizable   : true,
+			proxyDrag	: true,
+			autoScroll  : true,
+			keys:[{
+				key	: 27,
+				fn	: function(){
+						dialog.hide()
+				}.bind(this)
+			}],
+			items		:[grid],
+			listeners	:{
+				hide: function(){
+					this.fireEvent('dialogClosed', this.value);
+					//this.focus.defer(10, this);
+					dialog.destroy();
+				}.bind(this)				
+			},
+			buttons		: [{
+                text: ORYX.I18N.PropertyWindow.ok,
+                handler: function(){	 
+                	grid.getView().refresh();
+                	grid.stopEditing();
+                	var outValue = "";
+                	datainouts.data.each(function() {
+                		if(this.data['data'].length > 0) {
+                			outValue += this.data['data'] + ",";
+                		}
+                    });
+                	if(outValue.length > 0) {
+                		outValue = outValue.slice(0, -1)
+                	}
+					this.setValue(outValue);
+					this.dataSource.getAt(this.row).set('value', outValue)
+					this.dataSource.commitChanges()
+
+					dialog.hide()
+                }.bind(this)
+            }, {
+                text: ORYX.I18N.PropertyWindow.cancel,
+                handler: function(){
+					this.setValue(this.value);
+                	dialog.hide()
+                }.bind(this)
+            }]
+		});		
+				
+		dialog.show();		
+		grid.render();
+
+		this.grid.stopEditing();
+		grid.focus( false, 100 );
+    	
+    }
+});
+
+Ext.form.ComplexImportsField = Ext.extend(Ext.form.TriggerField,  {
+	/**
+     * If the trigger was clicked a dialog has to be opened
+     * to enter the values for the complex property.
+     */
+    onTriggerClick : function() {
+    	if(this.disabled){
+            return;
+        }
+    	
+    	var ImportDef = Ext.data.Record.create([{
+            name: 'import'
+        }]);
+    	
+    	var importsProxy = new Ext.data.MemoryProxy({
+            root: []
+        });
+    	
+    	var imports = new Ext.data.Store({
+    		autoDestroy: true,
+            reader: new Ext.data.JsonReader({
+                root: "root"
+            }, ImportDef),
+            proxy: importsProxy,
+            sorters: [{
+                property: 'import',
+                direction:'ASC'
+            }]
+        });
+    	imports.load();
+    	
+    	if(this.value.length > 0) {
+    		var valueParts = this.value.split(",");
+    		for(var i=0; i < valueParts.length; i++) {
+    			var nextPart = valueParts[i];
+    			imports.add(new ImportDef({
+                    'import': nextPart
+                }));
+    		}
+    	}
+    	
+    	var itemDeleter = new Extensive.grid.ItemDeleter();
+    	
+    	var gridId = Ext.id();
+    	var grid = new Ext.grid.EditorGridPanel({
+            store: imports,
+            id: gridId,
+            stripeRows: true,
+            cm: new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), {
+            	id: 'import',
+                header: 'Import',
+                width: 360,
+                dataIndex: 'import',
+                editor: new Ext.form.TextField({ allowBlank: false })
+            },itemDeleter]),
+    		selModel: itemDeleter,
+            autoHeight: true,
+            tbar: [{
+                text: 'Add Import',
+                handler : function(){
+                	imports.add(new ImportDef({
+                        'import': ''
+                    }));
+                    grid.fireEvent('cellclick', grid, imports.getCount()-1, 1, null);
+                }
+            }],
+            clicksToEdit: 1
+        });
+    	
+    	var dialog = new Ext.Window({ 
+			layout		: 'anchor',
+			autoCreate	: true, 
+			title		: 'Editor for Imports', 
+			height		: 300, 
+			width		: 450, 
+			modal		: true,
+			collapsible	: false,
+			fixedcenter	: true, 
+			shadow		: true, 
+			resizable   : true,
+			proxyDrag	: true,
+			autoScroll  : true,
+			keys:[{
+				key	: 27,
+				fn	: function(){
+						dialog.hide()
+				}.bind(this)
+			}],
+			items		:[grid],
+			listeners	:{
+				hide: function(){
+					this.fireEvent('dialogClosed', this.value);
+					//this.focus.defer(10, this);
+					dialog.destroy();
+				}.bind(this)				
+			},
+			buttons		: [{
+                text: ORYX.I18N.PropertyWindow.ok,
+                handler: function(){	 
+                	var outValue = "";
+                	grid.getView().refresh();
+                	grid.stopEditing();
+                	imports.data.each(function() {
+                		if(this.data['import'].length > 0) {
+                			outValue += this.data['import'] + ",";
+                		}
+                    });
+                	if(outValue.length > 0) {
+                		outValue = outValue.slice(0, -1)
+                	}
+					this.setValue(outValue);
+					this.dataSource.getAt(this.row).set('value', outValue)
+					this.dataSource.commitChanges()
+
+					dialog.hide()
+                }.bind(this)
+            }, {
+                text: ORYX.I18N.PropertyWindow.cancel,
+                handler: function(){
+					this.setValue(this.value);
+                	dialog.hide()
+                }.bind(this)
+            }]
+		});		
+				
+		dialog.show();		
+		grid.render();
+
+		this.grid.stopEditing();
+		grid.focus( false, 100 );
+    	
+    }
+});
+
+Ext.form.ComplexActionsField = Ext.extend(Ext.form.TriggerField,  {
+	/**
+     * If the trigger was clicked a dialog has to be opened
+     * to enter the values for the complex property.
+     */
+    onTriggerClick : function() {
+    	if(this.disabled){
+            return;
+        }
+    	
+    	var ActionDef = Ext.data.Record.create([{
+            name: 'action'
+        }]);
+    	
+    	var actionsProxy = new Ext.data.MemoryProxy({
+            root: []
+        });
+    	
+    	var actions = new Ext.data.Store({
+    		autoDestroy: true,
+            reader: new Ext.data.JsonReader({
+                root: "root"
+            }, ActionDef),
+            proxy: actionsProxy,
+            sorters: [{
+                property: 'action',
+                direction:'ASC'
+            }]
+        });
+    	actions.load();
+    	
+    	if(this.value.length > 0) {
+    		var valueParts = this.value.split("|");
+    		for(var i=0; i < valueParts.length; i++) {
+    			var nextPart = valueParts[i];
+    			actions.add(new ActionDef({
+                    action: nextPart
+                }));
+    		}
+    	}
+    	
+    	var itemDeleter = new Extensive.grid.ItemDeleter();
+    	
+    	var gridId = Ext.id();
+    	var grid = new Ext.grid.EditorGridPanel({
+            store: actions,
+            id: gridId,
+            stripeRows: true,
+            cm: new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), {
+            	id: 'action',
+                header: 'Action',
+                width: 360,
+                dataIndex: 'action',
+                editor: new Ext.form.TextField({ allowBlank: false })
+            },itemDeleter]),
+    		selModel: itemDeleter,
+            autoHeight: true,
+            tbar: [{
+                text: 'Add Action',
+                handler : function(){
+                	actions.add(new ActionDef({
+                        action: ''
+                    }));
+                    grid.fireEvent('cellclick', grid, actions.getCount()-1, 1, null);
+                }
+            }],
+            clicksToEdit: 1
+        });
+    	
+    	var dialog = new Ext.Window({ 
+			layout		: 'anchor',
+			autoCreate	: true, 
+			title		: 'Editor for Actions', 
+			height		: 300, 
+			width		: 450, 
+			modal		: true,
+			collapsible	: false,
+			fixedcenter	: true, 
+			shadow		: true, 
+			resizable   : true,
+			proxyDrag	: true,
+			autoScroll  : true,
+			keys:[{
+				key	: 27,
+				fn	: function(){
+						dialog.hide()
+				}.bind(this)
+			}],
+			items		:[grid],
+			listeners	:{
+				hide: function(){
+					this.fireEvent('dialogClosed', this.value);
+					//this.focus.defer(10, this);
+					dialog.destroy();
+				}.bind(this)				
+			},
+			buttons		: [{
+                text: ORYX.I18N.PropertyWindow.ok,
+                handler: function(){	 
+                	var outValue = "";
+                	grid.getView().refresh();
+                	grid.stopEditing();
+                	actions.data.each(function() {
+                		if(this.data['action'].length > 0) {
+                			outValue += this.data['action'] + "|";
+                		}
+                    });
+                	if(outValue.length > 0) {
+                		outValue = outValue.slice(0, -1)
+                	}
+					this.setValue(outValue);
+					this.dataSource.getAt(this.row).set('value', outValue)
+					this.dataSource.commitChanges()
+
+					dialog.hide()
+                }.bind(this)
+            }, {
+                text: ORYX.I18N.PropertyWindow.cancel,
+                handler: function(){
+					this.setValue(this.value);
+                	dialog.hide()
+                }.bind(this)
+            }]
+		});		
+				
+		dialog.show();		
+		grid.render();
+
+		this.grid.stopEditing();
+		grid.focus( false, 100 );
+    	
+    }
+});
+
+Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
+    /**
+     * If the trigger was clicked a dialog has to be opened
+     * to enter the values for the complex property.
+     */
+    onTriggerClick : function(){
+		
+        if(this.disabled){
+            return;
+        }
+        
+        var processJSON = ORYX.EDITOR.getSerializedJSON();
+        var processVars = jsonPath(processJSON.evalJSON(), "*..['vardefs']");
+        var varData = new Array();
+        var varDataTitle = new Array();
+        varDataTitle.push("");
+        varDataTitle.push("** Variable Definitions **");
+        varData.push(varDataTitle);
+        if(processVars) {
+        	processVars.forEach(function(item){
+            	if(item.length > 0) {
+	        		var valueParts = item.split(",");
+	        		for(var i=0; i < valueParts.length; i++) {
+	        			var innerVal = new Array();
+	        			var nextPart = valueParts[i];
+	        			if(nextPart.indexOf(":") > 0) {
+	        				var innerParts = nextPart.split(":");
+	        				innerVal.push(innerParts[0]);
+	        				innerVal.push(innerParts[0]);
+	        			} else {
+	        				innerVal.push(nextPart);
+	        				innerVal.push(nextPart);
+	        			}
+	        			varData.push(innerVal);
+	        		}
+        	    }
+        	});
+        }
+        
+        var dataInputsTitle = new Array();
+        dataInputsTitle.push("");
+        dataInputsTitle.push("** Data Inputs **");
+        varData.push(dataInputsTitle);
+        Ext.each(this.dataSource.data.items, function(item){
+        	if(item.data['name'] == "DataInputSet") {
+        		var valueParts = item.data['value'].split(",");
+        		for(var di=0; di < valueParts.length; di++) {
+        			var nextPart = valueParts[di];
+        			var innerVal = new Array();
+        			innerVal.push(nextPart);
+    				innerVal.push(nextPart);
+    				varData.push(innerVal);
+        		}
+        	} 
+        });
+        
+        var dataOutputsTitle = new Array();
+        dataOutputsTitle.push("");
+        dataOutputsTitle.push("** Data Outputs **");
+        varData.push(dataOutputsTitle);
+        Ext.each(this.dataSource.data.items, function(item){
+        	if(item.data['name'] == "DataOutputSet") {
+        		var valueParts = item.data['value'].split(",");
+        		for(var dou=0; dou < valueParts.length; dou++) {
+        			var nextPart = valueParts[dou];
+        			var innerVal = new Array();
+        			innerVal.push(nextPart);
+    				innerVal.push(nextPart);
+    				varData.push(innerVal);
+        		}
+        	} 
+        });
+        
+    	var DataAssignment = Ext.data.Record.create([{
+            name: 'from'
+        }, {
+            name: 'type'
+        }, {
+        	name: 'to'
+        }, {
+        	name: 'tostr'
+        }
+        ]);
+    	
+    	var dataassignmentProxy = new Ext.data.MemoryProxy({
+            root: []
+        });
+    	
+    	var dataassignments = new Ext.data.Store({
+    		autoDestroy: true,
+            reader: new Ext.data.JsonReader({
+                root: "root"
+            }, DataAssignment),
+            proxy: dataassignmentProxy,
+            sorters: [{
+                property: 'from',
+                direction:'ASC'
+            }, {
+            	property: 'to',
+            	direction: 'ASC'
+            }, {
+            	property: 'tostr',
+            	direction: 'ASC'
+            }
+            ]
+        });
+    	dataassignments.load();
+    	
+    	if(this.value.length > 0) {
+    		var valueParts = this.value.split(",");
+    		for(var i=0; i < valueParts.length; i++) {
+    			var nextPart = valueParts[i];
+    			if(nextPart.indexOf("=") > 0) {
+    				var innerParts = nextPart.split("=");
+    				dataassignments.add(new DataAssignment({
+                        from: innerParts[0],
+                        type: "is equal to",
+                        to: "",
+                        tostr: innerParts[1]
+                    }));
+    			} else if(nextPart.indexOf("->") > 0) {
+    				var innerParts = nextPart.split("->");
+    				dataassignments.add(new DataAssignment({
+                        from: innerParts[0],
+                        type: "is mapped to",
+                        to: innerParts[1],
+                        tostr: ""
+                    }));
+    			} 
+    		}
+    	}
+    	
+    	var itemDeleter = new Extensive.grid.ItemDeleter();
+    	var gridId = Ext.id();
+    	var grid = new Ext.grid.EditorGridPanel({
+            store: dataassignments,
+            id: gridId,
+            stripeRows: true,
+            cm: new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), {
+            	id: 'from',
+	            header: 'From Object',
+	            width: 180,
+	            dataIndex: 'from',
+	            editor: new Ext.form.ComboBox({
+	            	id: 'fromCombo',
+	            	valueField:'name',
+	            	displayField:'value',
+	            	typeAhead: true,
+					mode: 'local',
+					triggerAction: 'all',
+					selectOnFocus:true,
+					store: new Ext.data.SimpleStore({
+				        fields: [
+				                  'name',
+				                  'value'
+				                ],
+				        data: varData
+				    })
+	            })
+            }, {
+            	id: 'type',
+                header: 'Assignment Type',
+                width: 100,
+                dataIndex: 'type',
+                editor: new Ext.form.ComboBox({
+                	id: 'typeCombo',
+                	valueField:'name',
+                	displayField:'value',
+                	typeAhead: true,
+					mode: 'local',
+					triggerAction: 'all',
+					selectOnFocus:true,
+					store: new Ext.data.SimpleStore({
+				        fields: [
+				                  'name',
+				                  'value'
+				                ],
+				        data: [
+	                	        ['is mapped to','is mapped to'],
+	                	        ['is equal to','is equal to']
+	                	       ]
+				    })
+                })
+            }, {
+            	id: 'to',
+                header: 'To Object',
+                width: 180,
+                dataIndex: 'to',
+                editor: new Ext.form.ComboBox({
+                	id: 'toCombo',
+                	valueField:'name',
+                	displayField:'value',
+                	typeAhead: true,
+					mode: 'local',
+					triggerAction: 'all',
+					selectOnFocus:true,
+					store: new Ext.data.SimpleStore({
+				        fields: [
+				                  'name',
+				                  'value'
+				                ],
+				        data: varData
+				    })
+                })
+            }, {
+            	id: 'tostr',
+                header: 'To Value',
+                width: 180,
+                dataIndex: 'tostr',
+                editor: new Ext.form.TextField({ allowBlank: true })
+    		}, itemDeleter]),
+    		selModel: itemDeleter,
+            autoHeight: true,
+            tbar: [{
+                text: 'Add Assignment',
+                handler : function(){
+                	dataassignments.add(new DataAssignment({
+                        from: '',
+                        type: '',
+                        to: '',
+                        tostr: ''
+                    }));
+                    grid.fireEvent('cellclick', grid, dataassignments.getCount()-1, 1, null);
+                }
+            }],
+            clicksToEdit: 1
+        });
+    	
+		var dialog = new Ext.Window({ 
+			layout		: 'anchor',
+			autoCreate	: true, 
+			title		: 'Editor for Data Assignments', 
+			height		: 350, 
+			width		: 730, 
+			modal		: true,
+			collapsible	: false,
+			fixedcenter	: true, 
+			shadow		: true, 
+			resizable   : true,
+			proxyDrag	: true,
+			autoScroll  : true,
+			keys:[{
+				key	: 27,
+				fn	: function(){
+						dialog.hide()
+				}.bind(this)
+			}],
+			items		:[grid],
+			listeners	:{
+				hide: function(){
+					this.fireEvent('dialogClosed', this.value);
+					dialog.destroy();
+				}.bind(this)				
+			},
+			buttons		: [{
+                text: ORYX.I18N.PropertyWindow.ok,
+                handler: function(){	 
+                	var outValue = "";
+                	grid.getView().refresh();
+                	grid.stopEditing();
+                	dataassignments.data.each(function() {
+                		if(this.data['from'].length > 0 && this.data["type"].length > 0) {
+                			if(this.data["type"] == "is mapped to") {
+                				outValue += this.data['from'] + "->" + this.data['to'] + ",";
+                			} else if(this.data["type"] == "is equal to") {
+                				outValue += this.data['from'] + "=" + this.data['tostr'] + ",";
+                			}
+                		}
+                    });
+                	if(outValue.length > 0) {
+                		outValue = outValue.slice(0, -1)
+                	}
+					this.setValue(outValue);
+					this.dataSource.getAt(this.row).set('value', outValue)
+					this.dataSource.commitChanges()
+
+					dialog.hide()
+                }.bind(this)
+            }, {
+                text: ORYX.I18N.PropertyWindow.cancel,
+                handler: function(){
+					this.setValue(this.value);
+                	dialog.hide()
+                }.bind(this)
+            }]
+		});		
+				
+		dialog.show();		
+		grid.render();
+
+		this.grid.stopEditing();
+		grid.focus( false, 100 );
+		
+	}
+});
+
+
+Ext.form.ComplexVardefField = Ext.extend(Ext.form.TriggerField,  {
+
+    /**
+     * If the trigger was clicked a dialog has to be opened
+     * to enter the values for the complex property.
+     */
+    onTriggerClick : function(){
+		
+        if(this.disabled){
+            return;
+        }
+        
+    	var VarDef = Ext.data.Record.create([{
+            name: 'name'
+        }, {
+            name: 'type'
+        }]);
+    	
+    	var vardefsProxy = new Ext.data.MemoryProxy({
+            root: []
+        });
+    	
+    	var vardefs = new Ext.data.Store({
+    		autoDestroy: true,
+            reader: new Ext.data.JsonReader({
+                root: "root"
+            }, VarDef),
+            proxy: vardefsProxy,
+            sorters: [{
+                property: 'name',
+                direction:'ASC'
+            }]
+        });
+    	vardefs.load();
+    	
+    	if(this.value.length > 0) {
+    		var valueParts = this.value.split(",");
+    		for(var i=0; i < valueParts.length; i++) {
+    			var nextPart = valueParts[i];
+    			if(nextPart.indexOf(":") > 0) {
+    				var innerParts = nextPart.split(":");
+    				vardefs.add(new VarDef({
+                        name: innerParts[0],
+                        type: innerParts[1]
+                    }));
+    			} else {
+    				vardefs.add(new VarDef({
+                        name: nextPart,
+                        type: ''
+                    }));
+    			}
+    		}
+
+    	}
+    	
+    	var itemDeleter = new Extensive.grid.ItemDeleter();
+    	
+    	var gridId = Ext.id();
+    	var grid = new Ext.grid.EditorGridPanel({
+            store: vardefs,
+            id: gridId,
+            stripeRows: true,
+            cm: new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), {
+            	id: 'name',
+                header: 'Name',
+                width: 100,
+                dataIndex: 'name',
+                editor: new Ext.form.TextField({ allowBlank: false })
+            }, {
+            	id: 'type',
+                header: 'Type',
+                width: 200,
+                dataIndex: 'type',
+                editor: new Ext.form.TextField({ allowBlank: true })
+            }, itemDeleter]),
+    		selModel: itemDeleter,
+            autoHeight: true,
+            tbar: [{
+                text: 'Add Variable',
+                handler : function(){
+                	vardefs.add(new VarDef({
+                        name: '',
+                        type: ''
+                    }));
+                    grid.fireEvent('cellclick', grid, vardefs.getCount()-1, 1, null);
+                }
+            }],
+            clicksToEdit: 1
+        });
+    	
+		var dialog = new Ext.Window({ 
+			layout		: 'anchor',
+			autoCreate	: true, 
+			title		: 'Editor for Variable Definitions', 
+			height		: 300, 
+			width		: 400, 
+			modal		: true,
+			collapsible	: false,
+			fixedcenter	: true, 
+			shadow		: true, 
+			resizable   : true,
+			proxyDrag	: true,
+			autoScroll  : true,
+			keys:[{
+				key	: 27,
+				fn	: function(){
+						dialog.hide()
+				}.bind(this)
+			}],
+			items		:[grid],
+			listeners	:{
+				hide: function(){
+					this.fireEvent('dialogClosed', this.value);
+					//this.focus.defer(10, this);
+					dialog.destroy();
+				}.bind(this)				
+			},
+			buttons		: [{
+                text: ORYX.I18N.PropertyWindow.ok,
+                handler: function(){	 
+                	var outValue = "";
+                	grid.stopEditing();
+                	grid.getView().refresh();
+                	vardefs.data.each(function() {
+                		if(this.data['name'].length > 0) {
+                			if(this.data['type'].length > 0) {
+                				outValue += this.data['name'] + ":" + this.data['type'] + ",";
+                			} else {
+                				outValue += this.data['name'] + ",";
+                			}
+                		}
+                    });
+                	if(outValue.length > 0) {
+                		outValue = outValue.slice(0, -1)
+                	}
+					this.setValue(outValue);
+					this.dataSource.getAt(this.row).set('value', outValue)
+					this.dataSource.commitChanges()
+
+					dialog.hide()
+                }.bind(this)
+            }, {
+                text: ORYX.I18N.PropertyWindow.cancel,
+                handler: function(){
+					this.setValue(this.value);
+                	dialog.hide()
+                }.bind(this)
+            }]
+		});		
+				
+		dialog.show();		
+		grid.render();
+
+		this.grid.stopEditing();
+		grid.focus( false, 100 );
+		
+	}
+});
+
+Ext.form.ComplexGlobalsField = Ext.extend(Ext.form.TriggerField,  {
+
+    /**
+     * If the trigger was clicked a dialog has to be opened
+     * to enter the values for the complex property.
+     */
+    onTriggerClick : function(){
+		
+        if(this.disabled){
+            return;
+        }
+        
+    	var GlobalDef = Ext.data.Record.create([{
+            name: 'name'
+        }, {
+            name: 'type'
+        }]);
+    	
+    	var globalsProxy = new Ext.data.MemoryProxy({
+            root: []
+        });
+    	
+    	var globals = new Ext.data.Store({
+    		autoDestroy: true,
+            reader: new Ext.data.JsonReader({
+                root: "root"
+            }, GlobalDef),
+            proxy: globalsProxy, 
+            sorters: [{
+                property: 'name',
+                direction:'ASC'
+            }]
+        });
+    	globals.load();
+    	
+    	if(this.value.length > 0) {
+    		var valueParts = this.value.split(",");
+    		for(var i=0; i < valueParts.length; i++) {
+    			var nextPart = valueParts[i];
+    			if(nextPart.indexOf(":") > 0) {
+    				var innerParts = nextPart.split(":");
+    				globals.add(new GlobalDef({
+                        name: innerParts[0],
+                        type: innerParts[1]
+                    }));
+    			} else {
+    				globals.add(new GlobalDef({
+                        name: nextPart,
+                        type: ''
+                    }));
+    			}
+    		}
+
+    	}
+    	
+    	var itemDeleter = new Extensive.grid.ItemDeleter();
+    	
+    	var gridId = Ext.id();
+    	var grid = new Ext.grid.EditorGridPanel({
+            store: globals,
+            id: gridId,
+            stripeRows: true,
+            cm: new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), {
+            	id: 'name',
+                header: 'Name',
+                width: 100,
+                dataIndex: 'name',
+                editor: new Ext.form.TextField({ allowBlank: false })
+            }, {
+            	id: 'type',
+                header: 'Type',
+                width: 200,
+                dataIndex: 'type',
+                editor: new Ext.form.TextField({ allowBlank: true })
+            }, itemDeleter]),
+    		selModel: itemDeleter,
+            autoHeight: true,
+            tbar: [{
+                text: 'Add Global',
+                handler : function(){
+                	globals.add(new GlobalDef({
+                        name: '',
+                        type: ''
+                    }));
+                    grid.fireEvent('cellclick', grid, globals.getCount()-1, 1, null);
+                }
+            }],
+            clicksToEdit: 1
+        });
+    	
+		var dialog = new Ext.Window({ 
+			layout		: 'anchor',
+			autoCreate	: true, 
+			title		: 'Editor for Globals', 
+			height		: 300, 
+			width		: 400, 
+			modal		: true,
+			collapsible	: false,
+			fixedcenter	: true, 
+			shadow		: true, 
+			resizable   : true,
+			proxyDrag	: true,
+			autoScroll  : true,
+			keys:[{
+				key	: 27,
+				fn	: function(){
+						dialog.hide()
+				}.bind(this)
+			}],
+			items		:[grid],
+			listeners	:{
+				hide: function(){
+					this.fireEvent('dialogClosed', this.value);
+					//this.focus.defer(10, this);
+					dialog.destroy();
+				}.bind(this)				
+			},
+			buttons		: [{
+                text: ORYX.I18N.PropertyWindow.ok,
+                handler: function(){	 
+                	grid.stopEditing();
+                	grid.getView().refresh();
+                	var outValue = "";
+                	globals.data.each(function() {
+                		if(this.data['name'].length > 0) {
+                			if(this.data['type'].length > 0) {
+                				outValue += this.data['name'] + ":" + this.data['type'] + ",";
+                			} else {
+                				outValue += this.data['name'] + ",";
+                			}
+                		}
+                    });
+                	if(outValue.length > 0) {
+                		outValue = outValue.slice(0, -1)
+                	}
+					this.setValue(outValue);
+					this.dataSource.getAt(this.row).set('value', outValue)
 					this.dataSource.commitChanges()
 
 					dialog.hide()

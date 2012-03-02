@@ -53,7 +53,7 @@
 				}
 			]
 		},
-		{
+		/**{
 			"name" : "condition",
 			"properties" : [
 				{
@@ -68,20 +68,31 @@
 					"popular":true
 				}
 			]
-		},
+		},**/
 		{
 			"name":"boundaryevent",
 			"properties":[
 				{
 					"id":"boundarycancelactivity",
-					"type":"Boolean",
+					"type":"Choice",
 					"title":"CancelActivity",
-					"title_de":"Aktivität abbrechen",
-					"value":"",
+					"title_de":"CancelActivity",
+					"value":"false",
 					"description":"Denotes whether the activity should be cancelled or not, i.e., whether the boundary catch event acts as an error or an escalation. If the activity is not cancelled, multiple instances of that handler can run concurrently.",
-					"description_de":"Kennzeichnet ob eine Aktivität abgebrochen werden soll.",
 					"readonly":false,
-					"optional":true
+					"optional":true,
+					"items": [
+						{
+							"id": "c1",
+							"title":"false",
+							"value":"false"
+						},
+						{
+							"id": "c2",
+							"title": "true",
+							"value": "true"
+						}
+					]                                               
 				}
 			]
 		},
@@ -101,22 +112,22 @@
 					"length":"",
 					"wrapLines":true
 				},**/
-				{
-					"id":"eventdefinitions",
+				/**{
+					"id":"eventdefinition",
 					"type":"String",
-					"title":"EventDefinitions",
-					"title_de":"EreignisDefinitionen",
+					"title":"EventDefinition",
+					"title_de":"EreignisDefinitione",
 					"value":"",
-					"description":"EventDefinitions (EventDefinition) is an attribute that defines the type of contained triggers expected for a catch Event.",
-					"description_de":"Das Attribut EreignisDefinitions (EreignisDefinition) definiert die beinhaltenten Auslöser für ein eintretendes Ereignis.",
+					"description":"EventDefinition is an attribute that defines the type of contained triggers expected for a catch Event.",
+					"description_de":"Das Attribut EreignisDefinition definiert die beinhaltenten Auslöser für ein eintretendes Ereignis.",
 					"readonly":false,
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				},
+				},**/
 				{
 					"id":"dataoutputassociations",
-					"type":"Text",
+					"type":"Dataassignment",
 					"title":"DataOutputAssociations",
 					"title_de":"Daten Ausgangs-Assoziation",
 					"value":"",
@@ -129,7 +140,7 @@
 				},
 				{
 					"id":"dataoutput",
-					"type":"Text",
+					"type":"Dataoutput",
 					"title":"DataOutput",
 					"title_de":"Daten-Ausgang",
 					"value":"",
@@ -139,7 +150,8 @@
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				},
+				}
+				/**,
 				{
 					"id":"outputset",
 					"type":"Text",
@@ -152,7 +164,7 @@
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				}
+				}**/
  			]
  		},
  		{
@@ -186,7 +198,7 @@
 				},
 				{
 					"id":"datainputassociations",
-					"type":"String",
+					"type":"Dataassignment",
 					"title":"DataInputAssociations",
 					"title_de":"Daten Ausgangs-Assoziationen",
 					"value":"",
@@ -209,7 +221,8 @@
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				},
+				}
+				/**,
 				{
 					"id":"inputset",
 					"type":"String",
@@ -222,7 +235,7 @@
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				}
+				}**/
  			]
  		},
  		{
@@ -307,18 +320,40 @@
 				},
 				{
 					"id":"vardefs",
-					"type":"Text",
+					"type":"Vardef",
 					"title":"Variable Definitions",
 					"title_de":"Variable Definitions",
 					"value":"",
-					"description":"Comma-separated variable definitions",
-					"description_de":"Durch Komma getrennte Variablendeklarationen",
+					"description":"Variable Definitions",
+					"description_de":"Variablendeklarationen",
 					"readonly":false,
 					"optional":true
 				},
 				{
+					"id":"adhocprocess",
+					"type":"Choice",
+					"title":"AdHoc",
+					"title_de":"AdHoc",
+					"value":"false",
+					"description":"Defines an AdHoc process",
+					"readonly":false,
+					"optional":true,
+					"items": [
+						{
+							"id": "c1",
+							"title":"false",
+							"value":"false"
+						},
+						{
+							"id": "c2",
+							"title": "true",
+							"value": "true"
+						}
+					]                                               
+				},
+				{
 					"id":"imports",
-					"type":"Text",
+					"type":"Import",
 					"title":"Imports",
 					"title_de":"Imports",
 					"value":"",
@@ -328,7 +363,7 @@
 				},
 				{
 					"id":"globals",
-					"type":"Text",
+					"type":"Global",
 					"title":"Globals",
 					"title_de":"Globals",
 					"value":"",
@@ -370,7 +405,7 @@
 					"optional":true,
 					"length":"50"
 				},**/
-				{
+				/**{
 					"id":"language",
 					"type":"String",
 					"title":"Language",
@@ -382,7 +417,7 @@
 					"readonly":false,
 					"optional":true,
 					"length":"50"
-				},
+				},**/
 				/**{	
 					"id":"namespaces",
 					"type":"Complex",
@@ -600,7 +635,7 @@
 			"properties" : [
 				{
 					"id":"datainputset",
-					"type":"Text",
+					"type":"Datainput",
 					"title":"DataInputSet",
 					"title_de":"Dateneingabesatz",
 					"value":"",
@@ -638,7 +673,7 @@
 				},            
 				{
 					"id":"dataoutputset",
-					"type":"Text",
+					"type":"Dataoutput",
 					"title":"DataOutputSet",
 					"title_de":"Datenausgabesatz",
 					"value":"",
@@ -718,7 +753,7 @@
 				},
 				{
 					"id":"assignments",
-					"type":"Text",
+					"type":"Dataassignment",
 					"title":"Assignments",
 					"title_de":"Zuweisungen",
 					"value":"",
@@ -1420,7 +1455,7 @@
 					"type":"Choice",
 					"title":"TaskType",
 					"title_de":"Tasktyp",
-					"value":"None",
+					"value":"Script",
 					"description":"",
 					"readonly":false,
 					"optional":false,
@@ -2240,9 +2275,9 @@
 		{
 			"name" : "gateway",
 			"properties" : [
-				{
+				/**{
 					"id":"assignments",
-					"type":"Complex",
+					"type":"Dataassignment",
 					"title":"Assignments",
 					"title_de":"Zuweisungen",
 					"value":"",
@@ -2294,7 +2329,7 @@
 							]
 						}
 					]
-				}
+				}**/
 				/**,
 				{
 					"id":"gates",
@@ -2581,7 +2616,7 @@
 			"properties" : [
 			    {
 					"id":"assignments",
-					"type":"Complex",
+					"type":"Dataassignment",
 					"title":"Assignments",
 					"title_de":"Zuweisungen",
 					"value":"",
@@ -2607,8 +2642,9 @@
 							"value":"",
 							"width":100,
 							"optional":false
-						},
-						{
+						}
+						/**,**/
+						/**{
 							"id":"language",
 							"name":"Language",
 							"name_de":"Sprache",
@@ -2616,7 +2652,7 @@
 							"value":"",
 							"width":100,
 							"optional":true
-						}
+						}**/
 					]
 			    },
 			    {
@@ -2675,8 +2711,125 @@
 					"popular" : true
 				}
 			]
-		},		
-                
+		},
+		
+		// Acitvities
+		{
+			"type" : 			"node",
+			"id": 				"Task",
+			"title" : 			"Task",
+			"title_de" : 		"Task",
+			"groups" : 			["Activities"],
+			"groups_de" :		["Aktivitäten"],
+			"description" : 	"A task is a unit of work - the job to be performed.",
+			"description_de" : 	"Eine Task ist eine Arbeitseinheit. Sie repräsentiert die Aufgabe, die zu tun ist.",
+			"view" : 			"activity/task.svg",
+			"icon" : 			"activity/task.png",
+			"propertyPackages" :[
+				"baseAttributes",
+				"flowElement",
+				"activity",
+				"task",
+				/** "loopcharacteristics", **/
+				"properties",
+				"iospecification"
+			],
+			"roles" : 			[
+				"all",
+				"sequence_start",
+				"sequence_end",
+				"from_task_event",
+				"to_task_event",
+				"FromEventbasedGateway",
+				"messageflow_start",
+				"messageflow_end",
+				"fromtoall",
+				"ActivitiesMorph"
+			],
+			"properties": [
+				{
+					"id":"ruleFlowGroup",
+					"type":"String",
+					"title":"Ruleflow Group",
+					"title_de":"Ruleflow Gruppe",
+					"value":"",
+					"description":"ruleFlowGroup",
+					"readonly":false,
+					"optional":true
+				},
+				{
+					"id":"onEntryActions",
+					"type":"Action",
+					"title":"On Entry Actions",
+					"title_de":"On Entry Actions",
+					"value":"",
+					"description":"on entry actions",
+					"readonly":false,
+					"optional":true
+				},
+				{
+					"id":"onExitActions",
+					"type":"Action",
+					"title":"On Exit Actions",
+					"title_de":"On Exit Actions",
+					"value":"",
+					"description":"on exit actions",
+					"readonly":false,
+					"optional":true
+				},
+				{
+					"id":"taskName",
+					"type":"String",
+					"title":"Task Name",
+					"title_de":"Task Name",
+					"value":"",
+					"description":"Task Name",
+					"readonly":false,
+					"optional":true
+				},
+				{
+					"id":"interface",
+					"type":"String",
+					"title":"Interface",
+					"title_de":"Interface",
+					"value":"",
+					"description":"Interface",
+					"readonly":false,
+					"optional":true
+				},
+				{
+					"id":"operation",
+					"type":"String",
+					"title":"Operation",
+					"title_de":"Operation",
+					"value":"",
+					"description":"Operation",
+					"readonly":false,
+					"optional":true
+				},
+				{
+					"id":"actors",
+					"type":"String",
+					"title":"Actors",
+					"title_de":"Actors",
+					"value":"",
+					"description":"Comma-separated list of actors",
+					"readonly":false,
+					"optional":true
+				},
+				{
+					"id":"groupid",
+					"type":"String",
+					"title":"GroupID",
+					"title_de":"GroupID",
+					"value":"",
+					"description":"Group id value.",
+					"readonly":false,
+					"optional":true
+				}
+				
+			]
+		},
 		// start custom workitems
 		$workitemDefs.keys:{k| 
 		\{
@@ -2826,7 +2979,7 @@
 				\},
 				\{
 					"id":"datainputset",
-					"type":"Text",
+					"type":"Datainput",
 					"title":"DataInputSet",
 					"title_de":"Dateneingabesatz",
 					"value":"$workitemDefs.(k).parameters:{k1| $k1.name$}; separator=","$",
@@ -2837,10 +2990,10 @@
 				\},  
 				\{
 					"id":"dataoutputset",
-					"type":"Text",
+					"type":"Dataoutput",
 					"title":"DataOutputSet",
 					"title_de":"Datenausgabesatz",
-					"value":"",
+					"value":"$workitemDefs.(k).results:{k1| $k1.name$}; separator=","$",
 					"description":"An OutputSet is a collection of DataOutputs elements that together may be produced as output from an Activity or Event.",
 					"description_de":"Ein Ausgabesatz ist eine Zusammenstellung von Ausgabe-Datenobjekten, die zusammen als Ausgabe einer Aktivität oder eines Ereignisses produziert werden.",
 					"readonly":false,
@@ -2848,13 +3001,55 @@
 				\},
 				\{
 					"id":"assignments",
-					"type":"Text",
+					"type":"Dataassignment",
 					"title":"Assignments",
 					"title_de":"Zuweisungen",
 					"value":"$workitemDefs.(k).parameters:{k1| $k1.name$}; separator="=,"$=",
 					"description":"",
 					"readonly":false,
 					"optional":true,
+				\},
+				\{
+					"id":"onEntryActions",
+					"type":"Action",
+					"title":"On Entry Actions",
+					"title_de":"On Entry Actions",
+					"value":"",
+					"description":"on entry actions",
+					"readonly":false,
+					"optional":true
+				\},
+				\{
+					"id":"onExitActions",
+					"type":"Action",
+					"title":"On Exit Actions",
+					"title_de":"On Exit Actions",
+					"value":"",
+					"description":"on exit actions",
+					"readonly":false,
+					"optional":true
+				\},
+				\{
+					"id":"script_language",
+					"type":"Choice",
+					"title":"ScriptLanguage",
+					"title_de":"Skript Sprache",
+					"value":"java",
+					"description":"Defines the script language.",
+					"readonly":false,
+					"optional":true,
+					"items": [
+						\{
+							"id": "c1",
+							"title":"java",
+							"value":"java"
+						\},
+						\{
+							"id": "c2",
+							"title": "mvel",
+							"value": "mvel"
+						\}
+					]                                        
 				\}
 			]
 		\},
@@ -3043,7 +3238,7 @@
 				},	
 				{
 					"id":"onEntryActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Entry Actions",
 					"title_de":"On Entry Actions",
 					"value":"",
@@ -3053,7 +3248,7 @@
 				},
 				{
 					"id":"onExitActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Exit Actions",
 					"title_de":"On Exit Actions",
 					"value":"",
@@ -3212,7 +3407,7 @@
 				},
 				{
 					"id":"onEntryActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Entry Actions",
 					"title_de":"On Entry Actions",
 					"value":"",
@@ -3222,7 +3417,7 @@
 				},
 				{
 					"id":"onExitActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Exit Actions",
 					"title_de":"On Exit Actions",
 					"value":"",
@@ -3251,6 +3446,17 @@
 							"value": "mvel"
 						}
 					]                                        
+				},
+				{
+					"id":"vardefs",
+					"type":"Vardef",
+					"title":"Variable Definitions",
+					"title_de":"Variable Definitions",
+					"value":"",
+					"description":"Comma-separated variable definitions",
+					"description_de":"Durch Komma getrennte Variablendeklarationen",
+					"readonly":false,
+					"optional":true
 				}
 			],
 			"roles": [
@@ -3328,7 +3534,7 @@
 				},	
 				{
 					"id":"onEntryActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Entry Actions",
 					"title_de":"On Entry Actions",
 					"value":"",
@@ -3338,7 +3544,7 @@
 				},
 				{
 					"id":"onExitActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Exit Actions",
 					"title_de":"On Exit Actions",
 					"value":"",
@@ -3367,6 +3573,17 @@
 							"value": "mvel"
 						}
 					]                                        
+				},
+				{
+					"id":"vardefs",
+					"type":"Vardef",
+					"title":"Variable Definitions",
+					"title_de":"Variable Definitions",
+					"value":"",
+					"description":"Comma-separated variable definitions",
+					"description_de":"Durch Komma getrennte Variablendeklarationen",
+					"readonly":false,
+					"optional":true
 				}
 			],
 			"roles"	:			[
@@ -3445,7 +3662,7 @@
 				},	
 				{
 					"id":"onEntryActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Entry Actions",
 					"title_de":"On Entry Actions",
 					"value":"",
@@ -3455,7 +3672,7 @@
 				},
 				{
 					"id":"onExitActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Exit Actions",
 					"title_de":"On Exit Actions",
 					"value":"",
@@ -3484,6 +3701,17 @@
 							"value": "mvel"
 						}
 					]                                        
+				},
+				{
+					"id":"vardefs",
+					"type":"Vardef",
+					"title":"Variable Definitions",
+					"title_de":"Variable Definitions",
+					"value":"",
+					"description":"Comma-separated variable definitions",
+					"description_de":"Durch Komma getrennte Variablendeklarationen",
+					"readonly":false,
+					"optional":true
 				}
 			],
 			"roles"	:			[
@@ -3926,6 +4154,41 @@
 					"readonly":true,
 					"optional":false,
 					"length":""
+				},
+				{
+					"id":"activationcondition",
+					"type":"String",
+					"title":"ActivationCondition",
+					"title_de":"Aktivierungsbedingung",
+					"value":"",
+					"popular":true,
+					"description":"Determines which combination of incoming tokens will be synchronized for activation of the Gateway.",
+					"readonly":false,
+					"optional":true
+				},
+				{
+					"id":"incomingcondition",
+					"type":"String",
+					"title":"IncomingCondition",
+					"title_de":"Eingangsbedingung",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":"50"
+				},
+				{
+					"id":"outgoingcondition",
+					"type":"String",
+					"title":"OutgoingCondition",
+					"title_de":"Ausgangsbedingung",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"refToView":"",
+					"length":"50"
 				}
 			],
 			"roles": [
@@ -4230,7 +4493,50 @@
 							"refToView":"output"
 						}
 					]
-				},		
+				},
+				{
+					"id":"type",
+					"type":"Choice",
+					"title":"Type",
+					"title_de":"Type",
+					"value":"None",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"items":[
+						{
+							"id":"c1",
+							"title":"Object",
+							"value":"Object"
+						},
+						{
+							"id":"c2",
+							"title":"Boolean",
+							"value":"Boolean"
+						},
+						{
+							"id":"c3",
+							"title":"Float",
+							"value":"Float"
+						},
+						{
+							"id":"c3",
+							"title":"Integer",
+							"value":"Integer"
+						},
+						{
+							"id":"c3",
+							"title":"List",
+							"value":"List"
+						},
+						{
+							"id":"c3",
+							"title":"String",
+							"value":"String"
+						}
+					]
+				}**/
+				/**,		
 				{
 					"id" : "iscollection",
 					"type" : "Boolean",
@@ -4251,7 +4557,7 @@
 				"fromtoall",
 				"DataObjectMorph"
 			]
-		}, **/
+		},**/
 //		{
 //			"type" : 			"node",
 //			"id" :				"ITSystem",
@@ -4587,6 +4893,30 @@
 					"optional":true,
 					"refToView":"",
 					"length":""
+				},
+				{
+					"id":"timecyclelanguage",
+					"type":"Choice",
+					"title":"Time Cycle Language",
+					"title_de":"Time Cycle Language",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"items": [
+						{
+							"id":"nolang",
+							"title":"None",
+							"title_de":"None",
+							"value":"none"
+						},
+						{
+							"id":"cron",
+							"title":"Cron",
+							"title_de":"Cron",
+							"value":"cron"
+						}
+					]
 				}
 			]
 		},
@@ -4685,27 +5015,22 @@
 					"type":"Choice",
 					"title":"Language",
 					"title_de":"Sprache",
-					"value":"http://www.jboss.org/drools/rule",
-					"description":"",
+					"value":"drools",
+					"description":"Defines the condition language.",
 					"readonly":false,
-					"optional":false,
-                                        "items": [
+					"optional":true,
+					"items": [
 						{
-							"id":"rule",
-							"title":"Rule",
-							"value":"http://www.jboss.org/drools/rule"
+							"id": "c1",
+							"title":"drools",
+							"value":"drools"
 						},
 						{
-							"id":"java",
-							"title":"Java",
-							"value":"http://www.java.com/java"
-						},
-						{
-							"id":"xpath",
-							"title":"XPath",
-							"value":"http://www.w3.org/1999/XPath"
+							"id": "c2",
+							"title": "mvel",
+							"value": "mvel"
 						}
-					]
+					]                                               
 				},
 				{
 					"id":"conditionexpression",
@@ -5211,27 +5536,24 @@
 					"type":"Choice",
 					"title":"Condition Expression Language",
 					"title_de":"Bedingungsausdruck Sprache",
-					"value":"http://www.jboss.org/drools/rule",
+					"value":"java",
 					"description":"",
 					"readonly":false,
-					"optional":true,                                        
-                                        "items": [
+					"optional":true,
+					"length":"",
+					"wrapLines":true,
+					"items": [
 						{
-							"id":"rule",
-							"title":"Rule",
-							"value":"http://www.jboss.org/drools/rule"
+							"id": "c1",
+							"title": "java",
+							"value": "java"
 						},
 						{
-							"id":"java",
-							"title":"Java",
-							"value":"http://www.java.com/java"
-						},
-						{
-							"id":"xpath",
-							"title":"XPath",
-							"value":"http://www.w3.org/1999/XPath"
-						}
-					]
+							"id": "c2",
+							"title": "drools",
+							"value": "drools"
+						}    
+					]  
 				},
 				{
 					"id":"priority",

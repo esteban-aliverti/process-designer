@@ -1,31 +1,18 @@
-/**
- * Copyright (c) 2005-2009 Oryx Project
- * Copyright (c) 2010 Intalio, Inc
- * 
+/*
+ * Copyright 2010 JBoss Inc
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- *
- * @author martin.czuchra
- * @author Intalio, Inc
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 if(!ORYX) var ORYX = {};
 
 if(!ORYX.CONFIG) ORYX.CONFIG = {};
@@ -131,8 +118,8 @@ ORYX.CONFIG.NAMESPACE_ORYX =			"http://www.b3mn.org/oryx";
 ORYX.CONFIG.NAMESPACE_SVG =				"http://www.w3.org/2000/svg";
 
 	/* UI */
-ORYX.CONFIG.CANVAS_WIDTH =        1485;
-ORYX.CONFIG.CANVAS_HEIGHT =        1050;
+ORYX.CONFIG.CANVAS_WIDTH =				1485; 
+ORYX.CONFIG.CANVAS_HEIGHT =				1050;
 ORYX.CONFIG.CANVAS_RESIZE_INTERVAL =	300;
 ORYX.CONFIG.SELECTED_AREA_PADDING =		4;
 ORYX.CONFIG.CANVAS_BACKGROUND_COLOR =	"none";
@@ -152,7 +139,7 @@ ORYX.CONFIG.SHOW_GRIDLINE =             true;
 
 ORYX.CONFIG.BORDER_OFFSET =				14;
 
-ORYX.CONFIG.MAX_NUM_SHAPES_NO_GROUP	=	0;
+ORYX.CONFIG.MAX_NUM_SHAPES_NO_GROUP	=	14;
 
 ORYX.CONFIG.SHAPEMENU_CREATE_OFFSET_CORNER = 30;
 ORYX.CONFIG.SHAPEMENU_CREATE_OFFSET = 45;
@@ -178,6 +165,13 @@ ORYX.CONFIG.TYPE_URL =					"url";
 ORYX.CONFIG.TYPE_DIAGRAM_LINK =			"diagramlink";
 ORYX.CONFIG.TYPE_COMPLEX =				"complex";
 ORYX.CONFIG.TYPE_TEXT =					"text";
+ORYX.CONFIG.TYPE_VARDEF =               "vardef";
+ORYX.CONFIG.TYPE_ACTION =               "action";
+ORYX.CONFIG.TYPE_GLOBAL =               "global";
+ORYX.CONFIG.TYPE_IMPORT =               "import";
+ORYX.CONFIG.TYPE_DATAINPUT =            "datainput";
+ORYX.CONFIG.TYPE_DATAOUTPUT =           "dataoutput";
+ORYX.CONFIG.TYPE_DATAASSIGNMENT =       "dataassignment";
 	
 	/* Vertical line distance of multiline labels */
 ORYX.CONFIG.LABEL_LINE_DISTANCE =		2;
@@ -224,6 +218,7 @@ ORYX.CONFIG.EVENT_LOADING_DISABLE =			"loading.disable";
 ORYX.CONFIG.EVENT_LOADING_STATUS =			"loading.status";
 ORYX.CONFIG.EVENT_OVERLAY_SHOW =			"overlay.show";
 ORYX.CONFIG.EVENT_OVERLAY_HIDE =			"overlay.hide";
+ORYX.CONFIG.EVENT_DICTIONARY_ADD =          "dictionary.add";
 ORYX.CONFIG.EVENT_ARRANGEMENT_TOP =			"arrangement.setToTop";
 ORYX.CONFIG.EVENT_ARRANGEMENT_BACK =		"arrangement.setToBack";
 ORYX.CONFIG.EVENT_ARRANGEMENT_FORWARD =		"arrangement.setForward";
@@ -268,10 +263,6 @@ ORYX.CONFIG.DOCKER_SNAP_OFFSET =		10;
 	/* Copy & Paste */
 ORYX.CONFIG.EDIT_OFFSET_PASTE =			10;
 
-        /* Node Deletion Default Behaviour*/
-ORYX.CONFIG.EDIT_DELETE_EDGE_CONNECTIONS_ON_DELETE = false;
-ORYX.CONFIG.EDIT_DELETE_NODE_CONNECTIONS_ON_DELETE = true;
-
 
 	/* Key-Codes */
 ORYX.CONFIG.KEY_CODE_X = 				88;
@@ -309,3 +300,60 @@ ORYX.CONFIG.PANEL_LEFT_COLLAPSED = false;
 
 //KMR
 ORYX.CONFIG.KMR_VOCABULARY_SERVICE_URL  =   "/Workbench/KnowledgeModuleServlet"
+
+ORYX.CONFIG.STENCIL_MAX_ORDER = 999;
+ORYX.CONFIG.STENCIL_GROUP_ORDER = function() {
+	var stencilsHash = {};
+	// jbpm full perspective
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Activities"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Artifacts"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Catching Intermediate Events"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Connecting Objects"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Data Objects"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["End Events"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Gateways"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Service Tasks"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Start Events"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Swimlanes"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Throwing Intermediate Events"] = {};
+	
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Start Events"] = 1;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Catching Intermediate Events"] = 2;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Throwing Intermediate Events"] = 3;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["End Events"] = 4;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Gateways"] = 5;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Activities"] = 6;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Service Tasks"] = 7;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Connecting Objects"] = 8;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Data Objects"] = 9;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Swimlanes"] = 10;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Artifacts"] = 11;
+	
+	
+	// jbpm minimal perspective
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Task"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Reusable Subprocess"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Multiple instances"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Embedded Subprocess"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Data-based Exclusive (XOR) Gateway"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Start Event"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Timer Intermediate Event"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Signal Intermediate Event"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["End Event"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Error End Event"] = {};
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Sequence Flow"] = {};
+	
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Task"] = 7;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Reusable Subprocess"] = 8;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Multiple instances"] = 9;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Embedded Subprocess"] = 10;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Data-based Exclusive (XOR) Gateway"] = 6;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Start Event"] = 1;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Timer Intermediate Event"] = 2;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Signal Intermediate Event"] = 3;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["End Event"] = 4;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Error End Event"] = 5;
+	stencilsHash["http://b3mn.org/stencilset/bpmn2.0#"]["Sequence Flow"] = 11;
+	return stencilsHash;
+};

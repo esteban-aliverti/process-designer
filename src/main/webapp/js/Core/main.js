@@ -1472,9 +1472,6 @@ ORYX.Editor = {
 			if(docker && docker.getDockedShape() == shape) {
 				docker.setDockedShape(undefined);
 			}
-                        if (alsoDeleteConnectedShapes){
-                            this.deleteShape(os, false);
-                        }
 		}.bind(this));
 		
 		//delete references to incoming edges
@@ -1483,9 +1480,6 @@ ORYX.Editor = {
 			if(docker && docker.getDockedShape() == shape) {
 				docker.setDockedShape(undefined);
 			}
-                        if (alsoDeleteConnectedShapes){
-                            this.deleteShape(is, false);
-                        }
 		}.bind(this));
 		
 		//delete references of the shape's dockers

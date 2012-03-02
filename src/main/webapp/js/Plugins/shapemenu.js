@@ -227,7 +227,7 @@ ORYX.Plugins.ShapeMenuPlugin = {
 			align: 			ORYX.CONFIG.SHAPEMENU_BOTTOM,
 			group:			0,
 			msg:			ORYX.I18N.ShapeMenuPlugin.morphMsg
-		});				
+		});	
 		
 		this.shapeMenu.setNumberOfButtonsPerLevel(ORYX.CONFIG.SHAPEMENU_BOTTOM, 1)
 		this.shapeMenu.addButton(button);

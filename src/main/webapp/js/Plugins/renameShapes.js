@@ -304,4 +304,3 @@ ORYX.Plugins.RenameShapes = Clazz.extend({
 		}
 	}
 });
-

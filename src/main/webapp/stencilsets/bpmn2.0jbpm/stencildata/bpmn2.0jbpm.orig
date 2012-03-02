@@ -1,5 +1,5 @@
 {
-	"title":"jBPM BPMN2",
+	"title":"jBPM BPMN2 (Full)",
 	"namespace":"http://b3mn.org/stencilset/bpmn2.0#",
 	"description":"This is the jBPM BPMN 2.0 stencil set specification.",
  	"propertyPackages": [
@@ -53,7 +53,7 @@
 				}
 			]
 		},
-		{
+		/**{
 			"name" : "condition",
 			"properties" : [
 				{
@@ -68,20 +68,31 @@
 					"popular":true
 				}
 			]
-		},
+		},**/
 		{
 			"name":"boundaryevent",
 			"properties":[
 				{
 					"id":"boundarycancelactivity",
-					"type":"Boolean",
+					"type":"Choice",
 					"title":"CancelActivity",
-					"title_de":"Aktivität abbrechen",
-					"value":"",
+					"title_de":"CancelActivity",
+					"value":"false",
 					"description":"Denotes whether the activity should be cancelled or not, i.e., whether the boundary catch event acts as an error or an escalation. If the activity is not cancelled, multiple instances of that handler can run concurrently.",
-					"description_de":"Kennzeichnet ob eine Aktivität abgebrochen werden soll.",
 					"readonly":false,
-					"optional":true
+					"optional":true,
+					"items": [
+						{
+							"id": "c1",
+							"title":"false",
+							"value":"false"
+						},
+						{
+							"id": "c2",
+							"title": "true",
+							"value": "true"
+						}
+					]                                               
 				}
 			]
 		},
@@ -101,22 +112,22 @@
 					"length":"",
 					"wrapLines":true
 				},**/
-				{
-					"id":"eventdefinitions",
+				/**{
+					"id":"eventdefinition",
 					"type":"String",
-					"title":"EventDefinitions",
-					"title_de":"EreignisDefinitionen",
+					"title":"EventDefinition",
+					"title_de":"EreignisDefinitione",
 					"value":"",
-					"description":"EventDefinitions (EventDefinition) is an attribute that defines the type of contained triggers expected for a catch Event.",
-					"description_de":"Das Attribut EreignisDefinitions (EreignisDefinition) definiert die beinhaltenten Auslöser für ein eintretendes Ereignis.",
+					"description":"EventDefinition is an attribute that defines the type of contained triggers expected for a catch Event.",
+					"description_de":"Das Attribut EreignisDefinition definiert die beinhaltenten Auslöser für ein eintretendes Ereignis.",
 					"readonly":false,
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				},
+				},**/
 				{
 					"id":"dataoutputassociations",
-					"type":"Text",
+					"type":"Dataassignment",
 					"title":"DataOutputAssociations",
 					"title_de":"Daten Ausgangs-Assoziation",
 					"value":"",
@@ -129,7 +140,7 @@
 				},
 				{
 					"id":"dataoutput",
-					"type":"Text",
+					"type":"Dataoutput",
 					"title":"DataOutput",
 					"title_de":"Daten-Ausgang",
 					"value":"",
@@ -139,7 +150,8 @@
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				},
+				}
+				/**,
 				{
 					"id":"outputset",
 					"type":"Text",
@@ -152,7 +164,7 @@
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				}
+				}**/
  			]
  		},
  		{
@@ -186,7 +198,7 @@
 				},
 				{
 					"id":"datainputassociations",
-					"type":"String",
+					"type":"Dataassignment",
 					"title":"DataInputAssociations",
 					"title_de":"Daten Ausgangs-Assoziationen",
 					"value":"",
@@ -209,7 +221,8 @@
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				},
+				}
+				/**,
 				{
 					"id":"inputset",
 					"type":"String",
@@ -222,7 +235,7 @@
 					"optional":true,
 					"length":"",
 					"wrapLines":true
-				}
+				}**/
  			]
  		},
  		{
@@ -307,18 +320,40 @@
 				},
 				{
 					"id":"vardefs",
-					"type":"Text",
+					"type":"Vardef",
 					"title":"Variable Definitions",
 					"title_de":"Variable Definitions",
 					"value":"",
-					"description":"Comma-separated variable definitions",
-					"description_de":"Durch Komma getrennte Variablendeklarationen",
+					"description":"Variable Definitions",
+					"description_de":"Variablendeklarationen",
 					"readonly":false,
 					"optional":true
 				},
 				{
+					"id":"adhocprocess",
+					"type":"Choice",
+					"title":"AdHoc",
+					"title_de":"AdHoc",
+					"value":"false",
+					"description":"Defines an AdHoc process",
+					"readonly":false,
+					"optional":true,
+					"items": [
+						{
+							"id": "c1",
+							"title":"false",
+							"value":"false"
+						},
+						{
+							"id": "c2",
+							"title": "true",
+							"value": "true"
+						}
+					]                                               
+				},
+				{
 					"id":"imports",
-					"type":"Text",
+					"type":"Import",
 					"title":"Imports",
 					"title_de":"Imports",
 					"value":"",
@@ -328,7 +363,7 @@
 				},
 				{
 					"id":"globals",
-					"type":"Text",
+					"type":"Global",
 					"title":"Globals",
 					"title_de":"Globals",
 					"value":"",
@@ -370,7 +405,7 @@
 					"optional":true,
 					"length":"50"
 				},**/
-				{
+				/**{
 					"id":"language",
 					"type":"String",
 					"title":"Language",
@@ -382,7 +417,7 @@
 					"readonly":false,
 					"optional":true,
 					"length":"50"
-				},
+				},**/
 				/**{	
 					"id":"namespaces",
 					"type":"Complex",
@@ -600,7 +635,7 @@
 			"properties" : [
 				{
 					"id":"datainputset",
-					"type":"Text",
+					"type":"Datainput",
 					"title":"DataInputSet",
 					"title_de":"Dateneingabesatz",
 					"value":"",
@@ -638,7 +673,7 @@
 				},            
 				{
 					"id":"dataoutputset",
-					"type":"Text",
+					"type":"Dataoutput",
 					"title":"DataOutputSet",
 					"title_de":"Datenausgabesatz",
 					"value":"",
@@ -718,7 +753,7 @@
 				},
 				{
 					"id":"assignments",
-					"type":"Text",
+					"type":"Dataassignment",
 					"title":"Assignments",
 					"title_de":"Zuweisungen",
 					"value":"",
@@ -2240,9 +2275,9 @@
 		{
 			"name" : "gateway",
 			"properties" : [
-				{
+				/**{
 					"id":"assignments",
-					"type":"Complex",
+					"type":"Dataassignment",
 					"title":"Assignments",
 					"title_de":"Zuweisungen",
 					"value":"",
@@ -2294,7 +2329,7 @@
 							]
 						}
 					]
-				}
+				}**/
 				/**,
 				{
 					"id":"gates",
@@ -2581,7 +2616,7 @@
 			"properties" : [
 			    {
 					"id":"assignments",
-					"type":"Complex",
+					"type":"Dataassignment",
 					"title":"Assignments",
 					"title_de":"Zuweisungen",
 					"value":"",
@@ -2607,8 +2642,9 @@
 							"value":"",
 							"width":100,
 							"optional":false
-						},
-						{
+						}
+						/**,**/
+						/**{
 							"id":"language",
 							"name":"Language",
 							"name_de":"Sprache",
@@ -2616,7 +2652,7 @@
 							"value":"",
 							"width":100,
 							"optional":true
-						}
+						}**/
 					]
 			    },
 			    {
@@ -2723,7 +2759,7 @@
 				},
 				{
 					"id":"onEntryActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Entry Actions",
 					"title_de":"On Entry Actions",
 					"value":"",
@@ -2733,7 +2769,7 @@
 				},
 				{
 					"id":"onExitActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Exit Actions",
 					"title_de":"On Exit Actions",
 					"value":"",
@@ -2780,7 +2816,18 @@
 					"description":"Comma-separated list of actors",
 					"readonly":false,
 					"optional":true
+				},
+				{
+					"id":"groupid",
+					"type":"String",
+					"title":"GroupID",
+					"title_de":"GroupID",
+					"value":"",
+					"description":"Group id value.",
+					"readonly":false,
+					"optional":true
 				}
+				
 			]
 		},
 		// start custom workitems
@@ -2932,7 +2979,7 @@
 				\},
 				\{
 					"id":"datainputset",
-					"type":"Text",
+					"type":"Datainput",
 					"title":"DataInputSet",
 					"title_de":"Dateneingabesatz",
 					"value":"$workitemDefs.(k).parameters:{k1| $k1.name$}; separator=","$",
@@ -2943,10 +2990,10 @@
 				\},  
 				\{
 					"id":"dataoutputset",
-					"type":"Text",
+					"type":"Dataoutput",
 					"title":"DataOutputSet",
 					"title_de":"Datenausgabesatz",
-					"value":"",
+					"value":"$workitemDefs.(k).results:{k1| $k1.name$}; separator=","$",
 					"description":"An OutputSet is a collection of DataOutputs elements that together may be produced as output from an Activity or Event.",
 					"description_de":"Ein Ausgabesatz ist eine Zusammenstellung von Ausgabe-Datenobjekten, die zusammen als Ausgabe einer Aktivität oder eines Ereignisses produziert werden.",
 					"readonly":false,
@@ -2954,13 +3001,55 @@
 				\},
 				\{
 					"id":"assignments",
-					"type":"Text",
+					"type":"Dataassignment",
 					"title":"Assignments",
 					"title_de":"Zuweisungen",
 					"value":"$workitemDefs.(k).parameters:{k1| $k1.name$}; separator="=,"$=",
 					"description":"",
 					"readonly":false,
 					"optional":true,
+				\},
+				\{
+					"id":"onEntryActions",
+					"type":"Action",
+					"title":"On Entry Actions",
+					"title_de":"On Entry Actions",
+					"value":"",
+					"description":"on entry actions",
+					"readonly":false,
+					"optional":true
+				\},
+				\{
+					"id":"onExitActions",
+					"type":"Action",
+					"title":"On Exit Actions",
+					"title_de":"On Exit Actions",
+					"value":"",
+					"description":"on exit actions",
+					"readonly":false,
+					"optional":true
+				\},
+				\{
+					"id":"script_language",
+					"type":"Choice",
+					"title":"ScriptLanguage",
+					"title_de":"Skript Sprache",
+					"value":"java",
+					"description":"Defines the script language.",
+					"readonly":false,
+					"optional":true,
+					"items": [
+						\{
+							"id": "c1",
+							"title":"java",
+							"value":"java"
+						\},
+						\{
+							"id": "c2",
+							"title": "mvel",
+							"value": "mvel"
+						\}
+					]                                        
 				\}
 			]
 		\},
@@ -3028,7 +3117,7 @@
 				},	
 				{
 					"id":"onEntryActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Entry Actions",
 					"title_de":"On Entry Actions",
 					"value":"",
@@ -3038,7 +3127,7 @@
 				},
 				{
 					"id":"onExitActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Exit Actions",
 					"title_de":"On Exit Actions",
 					"value":"",
@@ -3197,7 +3286,7 @@
 				},
 				{
 					"id":"onEntryActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Entry Actions",
 					"title_de":"On Entry Actions",
 					"value":"",
@@ -3207,7 +3296,7 @@
 				},
 				{
 					"id":"onExitActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Exit Actions",
 					"title_de":"On Exit Actions",
 					"value":"",
@@ -3236,6 +3325,17 @@
 							"value": "mvel"
 						}
 					]                                        
+				},
+				{
+					"id":"vardefs",
+					"type":"Vardef",
+					"title":"Variable Definitions",
+					"title_de":"Variable Definitions",
+					"value":"",
+					"description":"Comma-separated variable definitions",
+					"description_de":"Durch Komma getrennte Variablendeklarationen",
+					"readonly":false,
+					"optional":true
 				}
 			],
 			"roles": [
@@ -3313,7 +3413,7 @@
 				},	
 				{
 					"id":"onEntryActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Entry Actions",
 					"title_de":"On Entry Actions",
 					"value":"",
@@ -3323,7 +3423,7 @@
 				},
 				{
 					"id":"onExitActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Exit Actions",
 					"title_de":"On Exit Actions",
 					"value":"",
@@ -3352,6 +3452,17 @@
 							"value": "mvel"
 						}
 					]                                        
+				},
+				{
+					"id":"vardefs",
+					"type":"Vardef",
+					"title":"Variable Definitions",
+					"title_de":"Variable Definitions",
+					"value":"",
+					"description":"Comma-separated variable definitions",
+					"description_de":"Durch Komma getrennte Variablendeklarationen",
+					"readonly":false,
+					"optional":true
 				}
 			],
 			"roles"	:			[
@@ -3430,7 +3541,7 @@
 				},	
 				{
 					"id":"onEntryActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Entry Actions",
 					"title_de":"On Entry Actions",
 					"value":"",
@@ -3440,7 +3551,7 @@
 				},
 				{
 					"id":"onExitActions",
-					"type":"Text",
+					"type":"Action",
 					"title":"On Exit Actions",
 					"title_de":"On Exit Actions",
 					"value":"",
@@ -3469,6 +3580,17 @@
 							"value": "mvel"
 						}
 					]                                        
+				},
+				{
+					"id":"vardefs",
+					"type":"Vardef",
+					"title":"Variable Definitions",
+					"title_de":"Variable Definitions",
+					"value":"",
+					"description":"Comma-separated variable definitions",
+					"description_de":"Durch Komma getrennte Variablendeklarationen",
+					"readonly":false,
+					"optional":true
 				}
 			],
 			"roles"	:			[
@@ -4291,7 +4413,7 @@
 		},
 		
 		// Data Objects
-		/**{
+		{
 			"type" : 			"node",
 			"id" :				"DataObject",
 			"title" :			"Data Object",
@@ -4310,7 +4432,7 @@
 				"bgColor"
 			],
 			"properties" :		[
-				{
+				/**{
 					"id":"state",
 					"type":"String",
 					"title":"State",
@@ -4321,7 +4443,7 @@
 					"readonly":false,
 					"optional":true,
 					"directlyEditable":false
-				},
+				},**/
 				{
 					"id":"input_output",
 					"type":"Choice",
@@ -4354,7 +4476,50 @@
 							"refToView":"output"
 						}
 					]
-				},		
+				},
+				{
+					"id":"type",
+					"type":"Choice",
+					"title":"Type",
+					"title_de":"Type",
+					"value":"None",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"items":[
+						{
+							"id":"c1",
+							"title":"Object",
+							"value":"Object"
+						},
+						{
+							"id":"c2",
+							"title":"Boolean",
+							"value":"Boolean"
+						},
+						{
+							"id":"c3",
+							"title":"Float",
+							"value":"Float"
+						},
+						{
+							"id":"c3",
+							"title":"Integer",
+							"value":"Integer"
+						},
+						{
+							"id":"c3",
+							"title":"List",
+							"value":"List"
+						},
+						{
+							"id":"c3",
+							"title":"String",
+							"value":"String"
+						}
+					]
+				}
+				/**,		
 				{
 					"id" : "iscollection",
 					"type" : "Boolean",
@@ -4366,7 +4531,7 @@
 					"readonly" : false,
 					"optional" : true,
 					"refToView" : "collection"
-				}
+				}**/
 			],
 			"roles" : 			[
 				"all",
@@ -4375,7 +4540,7 @@
 				"fromtoall",
 				"DataObjectMorph"
 			]
-		}, **/
+		},
 //		{
 //			"type" : 			"node",
 //			"id" :				"ITSystem",
@@ -4711,6 +4876,30 @@
 					"optional":true,
 					"refToView":"",
 					"length":""
+				},
+				{
+					"id":"timecyclelanguage",
+					"type":"Choice",
+					"title":"Time Cycle Language",
+					"title_de":"Time Cycle Language",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"items": [
+						{
+							"id":"nolang",
+							"title":"None",
+							"title_de":"None",
+							"value":"none"
+						},
+						{
+							"id":"cron",
+							"title":"Cron",
+							"title_de":"Cron",
+							"value":"cron"
+						}
+					]
 				}
 			]
 		},
@@ -4805,13 +4994,25 @@
 				},**/
 				{
 					"id":"conditionlanguage",
-					"type":"String",
+					"type":"Choice",
 					"title":"Language",
 					"title_de":"Sprache",
-					"value":"",
-					"description":"",
+					"value":"drools",
+					"description":"Defines the condition language.",
 					"readonly":false,
-					"optional":true
+					"optional":true,
+					"items": [
+						{
+							"id": "c1",
+							"title":"drools",
+							"value":"drools"
+						},
+						{
+							"id": "c2",
+							"title": "mvel",
+							"value": "mvel"
+						}
+					]                                               
 				},
 				{
 					"id":"conditionexpression",
@@ -4966,7 +5167,7 @@
 				}
 			]
 		},
-		{
+		/**{
 			"type" :		 	"node",
 			"id" :				"StartMultipleEvent",
 			"title" :			"Start Multiple Event",
@@ -4995,7 +5196,7 @@
 				"StartEventsMorph"
 			],
 			"properties": [
-				/**{
+				{
 					"id":"trigger",
 					"type":"String",
 					"title":"Trigger",
@@ -5004,10 +5205,10 @@
 					"description":"",
 					"readonly":true,
 					"optional":false
-				}**/
+				}
 			]
-		},
-		{
+		},**/
+		/**{
 			"type": "node",
 			"id":"StartParallelMultipleEvent",
 			"title":"Start Parallel Multiple Event",
@@ -5036,7 +5237,7 @@
 				"StartEventsMorph"
 			],
 			"properties": [
-				/**{
+				{
 					"id":"trigger",
 					"type":"String",
 					"title":"Trigger",
@@ -5045,12 +5246,11 @@
 					"description":"",
 					"readonly":true,
 					"optional":false
-				}**/
+				}
 			]
-		},
+		},**/
 		
 		// Intermediate Events Catching
-		
 		{
 			"type": "node",
 			"id":"IntermediateMessageEventCatching",
@@ -5187,6 +5387,30 @@
 					"optional":true,
 					"refToView":"",
 					"length":""
+				},
+				{
+					"id":"timecyclelanguage",
+					"type":"Choice",
+					"title":"Time Cycle Language",
+					"title_de":"Time Cycle Language",
+					"value":"",
+					"description":"",
+					"readonly":false,
+					"optional":true,
+					"items": [
+						{
+							"id":"nolang",
+							"title":"None",
+							"title_de":"None",
+							"value":"none"
+						},
+						{
+							"id":"cron",
+							"title":"Cron",
+							"title_de":"Cron",
+							"value":"cron"
+						}
+					]
 				}
 			]
 		},
@@ -5293,13 +5517,25 @@
 				},**/
 				{
 					"id":"conditionlanguage",
-					"type":"String",
+					"type":"Choice",
 					"title":"Language",
 					"title_de":"Sprache",
-					"value":"",
-					"description":"",
+					"value":"drools",
+					"description":"Defines the condition language.",
 					"readonly":false,
-					"optional":true
+					"optional":true,
+					"items": [
+						{
+							"id": "c1",
+							"title":"drools",
+							"value":"drools"
+						},
+						{
+							"id": "c2",
+							"title": "mvel",
+							"value": "mvel"
+						}
+					]                                               
 				},
 				{
 					"id":"conditionexpression",
@@ -5313,7 +5549,7 @@
 				}
 			]
 		},
-		{
+		/**{
 			"type": "node",
 			"id":"IntermediateLinkEventCatching",
 			"title":"Link Intermediate Event",
@@ -5349,8 +5585,7 @@
                     "readonly":false,
 					"refToView" : "diagramLink",
                     "optional":false
-                }
-                /**,
+                },
 				{
 					"id":"trigger",
 					"type":"String",
@@ -5362,9 +5597,9 @@
 					"optional":false,
 					"refToView":"",
 					"length":""
-				}**/
+				}
 			]
-		},
+		},**/
 		{
 			"type": "node",
 			"id":"IntermediateErrorEvent",
@@ -5419,7 +5654,7 @@
 				}
 			]
 		},
-		{
+		/**{
 			"type": "node",
 			"id":"IntermediateCancelEvent",
 			"title":"Cancel Intermediate Event",
@@ -5447,7 +5682,7 @@
 				"IntermediateEventsMorph"
 			],
 			"properties": [
-				/**{
+				{
 					"id":"trigger",
 					"type":"String",
 					"title":"Trigger",
@@ -5458,9 +5693,9 @@
 					"optional":false,
 					"refToView":"",
 					"length":""
-				}**/
+				}
 			]
-		},
+		},**/
 		{
 			"type": "node",
 			"id":"IntermediateCompensationEventCatching",
@@ -5562,7 +5797,7 @@
 				}
 			]
 		},
-		{
+		/**{
 			"type": "node",
 			"id":"IntermediateMultipleEventCatching",
 			"title":"Multiple Intermediate Event",
@@ -5596,7 +5831,7 @@
 				"IntermediateEventsMorph"
 			],
 			"properties": [
-				/**{
+				{
 					"id":"trigger",
 					"type":"String",
 					"title":"Trigger",
@@ -5607,10 +5842,10 @@
 					"optional":false,
 					"refToView":"",
 					"length":""
-				}**/
+				}
 			]
-		},
-		{
+		},**/
+		/**{
 			"type": "node",
 			"id":"IntermediateParallelMultipleEventCatching",
 			"title":"Parallel Multiple Intermediate Event",
@@ -5643,7 +5878,7 @@
 				"IntermediateEventsMorph"
 			],
 			"properties": [
-				/**{
+				{
 					"id":"trigger",
 					"type":"String",
 					"title":"Trigger",
@@ -5654,12 +5889,11 @@
 					"optional":false,
 					"refToView":"",
 					"length":""
-				}**/
+				}
 			]
-		},
+		},**/
 		
 		// Intermediate Events Throwing
-		
 		{
 			"type": "node",
 			"id":"IntermediateEvent",
@@ -5800,7 +6034,7 @@
 				}
 			]
 		},
-		{
+		/** {
 			"type": "node",
 			"id":"IntermediateLinkEventThrowing",
 			"title":"Link Intermediate Event",
@@ -5836,8 +6070,7 @@
 					"refToView": "diagramLink",
                     "readonly":false,
                     "optional":false
-                }
-                /**,
+                },
 				{
 					"id":"trigger",
 					"type":"String",
@@ -5847,9 +6080,9 @@
 					"description":"",
 					"readonly":true,
 					"optional":false
-				}**/
+				}
 			]
-		},
+		},**/
 		{
 			"type": "node",
 			"id":"IntermediateCompensationEventThrowing",
@@ -5940,7 +6173,7 @@
 				}
 			]
 		},
-		{
+		/**{
 			"type": "node",
 			"id":"IntermediateMultipleEventThrowing",
 			"title":"Multiple Intermediate Event",
@@ -5967,7 +6200,7 @@
 				"IntermediateEventsMorph"
 			],
 			"properties": [
-				/**{
+				{
 					"id":"trigger",
 					"type":"String",
 					"title":"Trigger",
@@ -5976,9 +6209,9 @@
 					"description":"",
 					"readonly":true,
 					"optional":false
-				}**/
+				}
 			]
-		},
+		},**/
 		
 		// End Events
 		
@@ -6294,7 +6527,7 @@
 				}
 			]
 		},
-		{
+		/**{
 			"type": "node",
 			"id":"EndMultipleEvent",
 			"title":"Multiple End Event",
@@ -6321,7 +6554,7 @@
 				"EndEventsMorph"
 			],
 			"properties": [
-				/**{
+				{
 					"id":"trigger",
 					"type":"String",
 					"title":"Trigger",
@@ -6330,9 +6563,9 @@
 					"description":"",
 					"readonly":true,
 					"optional":false
-				}**/
+				}
 			]
-		},
+		},**/
 		{
 			"type": "node",
 			"id":"EndTerminateEvent",
@@ -6456,27 +6689,24 @@
 					"type":"Choice",
 					"title":"Condition Expression Language",
 					"title_de":"Bedingungsausdruck Sprache",
-					"value":"http://www.jboss.org/drools/rule",
+					"value":"java",
 					"description":"",
 					"readonly":false,
-					"optional":true,                                        
-                                        "items": [
+					"optional":true,
+					"length":"",
+					"wrapLines":true,
+					"items": [
 						{
-							"id":"rule",
-							"title":"Rule",
-							"value":"http://www.jboss.org/drools/rule"
+							"id": "c1",
+							"title": "java",
+							"value": "java"
 						},
 						{
-							"id":"java",
-							"title":"Java",
-							"value":"http://www.java.com/java"
-						},
-						{
-							"id":"xpath",
-							"title":"XPath",
-							"value":"http://www.w3.org/1999/XPath"
-						}
-					]
+							"id": "c2",
+							"title": "drools",
+							"value": "drools"
+						}    
+					]  
 				},
 				{
 					"id":"priority",
@@ -6578,7 +6808,7 @@
 				}
            ]
 		},
-		/**{
+		{
 			"type": "edge",
 			"id":"Association_Unidirectional",
 			"title":"Association (unidirectional)",
@@ -6613,7 +6843,7 @@
 					"popular":true
                 }
            ]
-		},**/
+		},
 		/**{
 			"type": "edge",
 			"id":"Association_Bidirectional",
