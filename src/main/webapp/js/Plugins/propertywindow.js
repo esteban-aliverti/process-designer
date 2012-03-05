@@ -30,6 +30,10 @@ if (!ORYX.FieldEditors) {
 	ORYX.FieldEditors = {};
 }
 
+if (!ORYX.AssociationEditors) {
+	ORYX.AssociationEditors = {};
+}
+
 if (!ORYX.LabelProviders) {
     ORYX.LabelProviders = {};
 }
@@ -624,7 +628,7 @@ ORYX.Plugins.PropertyWindow = {
 								fields: [{name: 'icon'},
 								         {name: 'title'},
 								         {name: 'value'}	],
-								         data : options // from states.js
+								         data : options
 							});
 
 							// Set the grid Editor
@@ -1788,13 +1792,16 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
     onTriggerClick : function(){
 		
         if(this.disabled){
-            return;
+            return undefined;
         }
         
         var processJSON = ORYX.EDITOR.getSerializedJSON();
         var processVars = jsonPath(processJSON.evalJSON(), "*..['vardefs']");
         var varData = new Array();
         var varDataTitle = new Array();
+        
+        var dataTypeMap = new Hash();
+        
         varDataTitle.push("");
         varDataTitle.push("** Variable Definitions **");
         varData.push(varDataTitle);
@@ -1809,16 +1816,18 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
 	        				var innerParts = nextPart.split(":");
 	        				innerVal.push(innerParts[0]);
 	        				innerVal.push(innerParts[0]);
+                                                dataTypeMap[innerParts[0]] = innerParts[1];
 	        			} else {
 	        				innerVal.push(nextPart);
 	        				innerVal.push(nextPart);
+                                                dataTypeMap[nextPart] = "java.lang.String";
 	        			}
 	        			varData.push(innerVal);
 	        		}
         	    }
         	});
         }
-        
+
         var dataInputsTitle = new Array();
         dataInputsTitle.push("");
         dataInputsTitle.push("** Data Inputs **");
@@ -1828,9 +1837,17 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
         		var valueParts = item.data['value'].split(",");
         		for(var di=0; di < valueParts.length; di++) {
         			var nextPart = valueParts[di];
-        			var innerVal = new Array();
-        			innerVal.push(nextPart);
-    				innerVal.push(nextPart);
+                                var innerVal = new Array();
+                                if(nextPart.indexOf(":") > 0) {
+                                        var innerParts = nextPart.split(":");
+                                        innerVal.push(innerParts[0]);
+                                        innerVal.push(innerParts[0]);
+                                        dataTypeMap[innerParts[0]] = innerParts[1];
+                                } else {
+                                        innerVal.push(nextPart);
+                                        innerVal.push(nextPart);
+                                        dataTypeMap[nextPart] = "java.lang.String";
+                                }
     				varData.push(innerVal);
         		}
         	} 
@@ -1845,9 +1862,17 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
         		var valueParts = item.data['value'].split(",");
         		for(var dou=0; dou < valueParts.length; dou++) {
         			var nextPart = valueParts[dou];
-        			var innerVal = new Array();
-        			innerVal.push(nextPart);
-    				innerVal.push(nextPart);
+                                var innerVal = new Array();
+                                if(nextPart.indexOf(":") > 0) {
+                                        var innerParts = nextPart.split(":");
+                                        innerVal.push(innerParts[0]);
+                                        innerVal.push(innerParts[0]);
+                                        dataTypeMap[innerParts[0]] = innerParts[1];
+                                } else {
+                                        innerVal.push(nextPart);
+                                        innerVal.push(nextPart);
+                                        dataTypeMap[nextPart] = "java.lang.String";
+                                }
     				varData.push(innerVal);
         		}
         	} 
@@ -1861,6 +1886,8 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
         	name: 'to'
         }, {
         	name: 'tostr'
+        }, {
+                name: 'dataType'
         }
         ]);
     	
@@ -1893,24 +1920,45 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
     		for(var i=0; i < valueParts.length; i++) {
     			var nextPart = valueParts[i];
     			if(nextPart.indexOf("=") > 0) {
-    				var innerParts = nextPart.split("=");
-    				dataassignments.add(new DataAssignment({
-                        from: innerParts[0],
-                        type: "is equal to",
-                        to: "",
-                        tostr: innerParts[1]
-                    }));
+                            var innerParts = nextPart.split("=");
+                            var dataType = dataTypeMap[innerParts[0]];
+                            if (!dataType){
+                                dataType = "java.lang.String";
+                            }
+                            dataassignments.add(new DataAssignment({
+                                from: innerParts[0],
+                                type: "is equal to",
+                                to: "",
+                                tostr: innerParts[1],
+                                dataType: dataType
+                            }));
     			} else if(nextPart.indexOf("->") > 0) {
-    				var innerParts = nextPart.split("->");
-    				dataassignments.add(new DataAssignment({
-                        from: innerParts[0],
-                        type: "is mapped to",
-                        to: innerParts[1],
-                        tostr: ""
-                    }));
+                            var innerParts = nextPart.split("->");
+                            var dataType = dataTypeMap[innerParts[0]];
+                            if (!dataType){
+                                dataType = "java.lang.String";
+                            }
+                            dataassignments.add(new DataAssignment({
+                                from: innerParts[0],
+                                type: "is mapped to",
+                                to: innerParts[1],
+                                tostr: "",
+                                dataType: dataType
+                            }));
     			} 
     		}
     	}
+        
+        //keep sync between from and dataType
+        dataassignments.on('update', function(store, record, operation){
+            if (operation == "edit"){
+                var newType = dataTypeMap[record.get("from")];
+                if (!newType){
+                    newType = "java.lang.String";
+                }
+                record.set("dataType", newType);
+            }
+        });
     	
     	var itemDeleter = new Extensive.grid.ItemDeleter();
     	var gridId = Ext.id();
@@ -1919,6 +1967,12 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
             id: gridId,
             stripeRows: true,
             cm: new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), {
+                    id: 'valueType',
+                    header: 'Data Type',
+	            width: 180,
+                    dataIndex: 'dataType',
+                    hidden: 'true'
+                },{
             	id: 'from',
 	            header: 'From Object',
 	            width: 180,
@@ -1928,16 +1982,16 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
 	            	valueField:'name',
 	            	displayField:'value',
 	            	typeAhead: true,
-					mode: 'local',
-					triggerAction: 'all',
-					selectOnFocus:true,
-					store: new Ext.data.SimpleStore({
-				        fields: [
-				                  'name',
-				                  'value'
-				                ],
-				        data: varData
-				    })
+                        mode: 'local',
+                        triggerAction: 'all',
+                        selectOnFocus:true,
+                        store: new Ext.data.SimpleStore({
+                            fields: [
+                                        'name',
+                                        'value'
+                                    ],
+                            data: varData
+                        })
 	            })
             }, {
             	id: 'type',
@@ -2072,7 +2126,8 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
 
 		this.grid.stopEditing();
 		grid.focus( false, 100 );
-		
+	
+                return grid;
 	}
 });
 
@@ -2092,7 +2147,9 @@ Ext.form.ComplexVardefField = Ext.extend(Ext.form.TriggerField,  {
     	var VarDef = Ext.data.Record.create([{
             name: 'name'
         }, {
-            name: 'type'
+            name: 'stype'
+        }, {
+            name: 'ctype'
         }]);
     	
     	var vardefsProxy = new Ext.data.MemoryProxy({
@@ -2118,14 +2175,32 @@ Ext.form.ComplexVardefField = Ext.extend(Ext.form.TriggerField,  {
     			var nextPart = valueParts[i];
     			if(nextPart.indexOf(":") > 0) {
     				var innerParts = nextPart.split(":");
-    				vardefs.add(new VarDef({
-                        name: innerParts[0],
-                        type: innerParts[1]
-                    }));
+    				if(innerParts[1] == "String" || innerParts[1] == "Integer" || innerParts[1] == "Boolean" || innerParts[1] == "Float") {
+    					vardefs.add(new VarDef({
+                            name: innerParts[0],
+                            stype: innerParts[1],
+                            ctype: ''
+                        }));
+    				} else {
+    					if(innerParts[1] != "Object") {
+    						vardefs.add(new VarDef({
+                                name: innerParts[0],
+                                stype: 'Object',
+                                ctype: innerParts[1]
+                            }));
+    					} else {
+    						vardefs.add(new VarDef({
+                                name: innerParts[0],
+                                stype: innerParts[1],
+                                ctype: ''
+                            }));
+    					}
+    				}
     			} else {
     				vardefs.add(new VarDef({
                         name: nextPart,
-                        type: ''
+                        stype: '',
+                        ctype: ''
                     }));
     			}
     		}
@@ -2133,6 +2208,28 @@ Ext.form.ComplexVardefField = Ext.extend(Ext.form.TriggerField,  {
     	}
     	
     	var itemDeleter = new Extensive.grid.ItemDeleter();
+    	
+    	var typeData = new Array();
+    	var stringType = new Array();
+    	stringType.push("String");
+    	stringType.push("String");
+    	typeData.push(stringType);
+    	var integerType = new Array();
+    	integerType.push("Integer");
+    	integerType.push("Integer");
+    	typeData.push(integerType);
+    	var booleanType = new Array();
+    	booleanType.push("Boolean");
+    	booleanType.push("Boolean");
+    	typeData.push(booleanType);
+    	var floatType = new Array();
+    	floatType.push("Float");
+    	floatType.push("Float");
+    	typeData.push(floatType);
+    	var objectType = new Array();
+    	objectType.push("Object");
+    	objectType.push("Object");
+    	typeData.push(objectType);
     	
     	var gridId = Ext.id();
     	var grid = new Ext.grid.EditorGridPanel({
@@ -2146,11 +2243,39 @@ Ext.form.ComplexVardefField = Ext.extend(Ext.form.TriggerField,  {
                 dataIndex: 'name',
                 editor: new Ext.form.TextField({ allowBlank: false })
             }, {
-            	id: 'type',
-                header: 'Type',
+            	id: 'stype',
+                header: 'Standard Type',
+                width: 100,
+                dataIndex: 'stype',
+                editor: new Ext.form.ComboBox({
+                	id: 'typeCombo',
+                	valueField:'name',
+                	displayField:'value',
+                	labelStyle:'display:none',
+                	submitValue : true,
+                	typeAhead: false,
+                	queryMode: 'local',
+                	mode: 'local',
+					triggerAction: 'all',
+					selectOnFocus:true,
+					hideTrigger: false,
+					forceSelection: false,
+					selectOnFocus:true,
+					autoSelect:false,
+					store: new Ext.data.SimpleStore({
+				        fields: [
+				                  'name',
+				                  'value'
+				                ],
+				        data: typeData
+				    })
+                })
+            },{
+            	id: 'ctype',
+                header: 'Custom Type',
                 width: 200,
-                dataIndex: 'type',
-                editor: new Ext.form.TextField({ allowBlank: true })
+                dataIndex: 'ctype',
+                editor: new Ext.form.TextField({ allowBlank: false })
             }, itemDeleter]),
     		selModel: itemDeleter,
             autoHeight: true,
@@ -2159,7 +2284,8 @@ Ext.form.ComplexVardefField = Ext.extend(Ext.form.TriggerField,  {
                 handler : function(){
                 	vardefs.add(new VarDef({
                         name: '',
-                        type: ''
+                        stype: '',
+                        ctype: ''
                     }));
                     grid.fireEvent('cellclick', grid, vardefs.getCount()-1, 1, null);
                 }
@@ -2172,7 +2298,7 @@ Ext.form.ComplexVardefField = Ext.extend(Ext.form.TriggerField,  {
 			autoCreate	: true, 
 			title		: 'Editor for Variable Definitions', 
 			height		: 300, 
-			width		: 400, 
+			width		: 500, 
 			modal		: true,
 			collapsible	: false,
 			fixedcenter	: true, 
@@ -2202,8 +2328,14 @@ Ext.form.ComplexVardefField = Ext.extend(Ext.form.TriggerField,  {
                 	grid.getView().refresh();
                 	vardefs.data.each(function() {
                 		if(this.data['name'].length > 0) {
-                			if(this.data['type'].length > 0) {
-                				outValue += this.data['name'] + ":" + this.data['type'] + ",";
+                			if(this.data['stype'].length > 0) {
+                				if(this.data['stype'] == "Object" && this.data['ctype'].length > 0) {
+                					outValue += this.data['name'] + ":" + this.data['ctype'] + ",";
+                				} else {
+                					outValue += this.data['name'] + ":" + this.data['stype'] + ",";
+                				}
+                			} else if(this.data['ctype'].length > 0) { 
+                				outValue += this.data['name'] + ":" + this.data['ctype'] + ",";
                 			} else {
                 				outValue += this.data['name'] + ",";
                 			}

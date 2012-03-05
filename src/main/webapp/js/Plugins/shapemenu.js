@@ -204,7 +204,6 @@ ORYX.Plugins.ShapeMenuPlugin = {
 	},
         
 	createMorphMenu: function() {
-		
 		this.morphMenu = new Ext.menu.Menu({
 			id: 'Oryx_morph_menu',
 			items: []
