@@ -902,6 +902,9 @@ public class Bpmn2JsonMarshaller {
                 for(DataInput dataIn : dataInputList) {
                     if(dataIn.getName() != null) {
                         dataInBuffer.append(dataIn.getName());
+                        if(dataIn.getItemSubjectRef() != null && dataIn.getItemSubjectRef().getStructureRef() != null && dataIn.getItemSubjectRef().getStructureRef().length() > 0) {
+                        	dataInBuffer.append(":").append(dataIn.getItemSubjectRef().getStructureRef());
+                        }
                         dataInBuffer.append(",");
                     }
                 }
@@ -920,6 +923,9 @@ public class Bpmn2JsonMarshaller {
                 List<DataOutput> dataOutputList =  outset.getDataOutputRefs();
                 for(DataOutput dataOut : dataOutputList) {
                     dataOutBuffer.append(dataOut.getName());
+                    if(dataOut.getItemSubjectRef() != null && dataOut.getItemSubjectRef().getStructureRef() != null && dataOut.getItemSubjectRef().getStructureRef().length() > 0) {
+                    	dataOutBuffer.append(":").append(dataOut.getItemSubjectRef().getStructureRef());
+                    }
                     dataOutBuffer.append(",");
                 }
             }
@@ -1208,6 +1214,9 @@ public class Bpmn2JsonMarshaller {
                     // dont add "TaskName" as that is added manually
                     if(dataIn.getName() != null && !dataIn.getName().equals("TaskName")) {
                         dataInBuffer.append(dataIn.getName());
+                        if(dataIn.getItemSubjectRef() != null && dataIn.getItemSubjectRef().getStructureRef() != null && dataIn.getItemSubjectRef().getStructureRef().length() > 0) {
+                        	dataInBuffer.append(":").append(dataIn.getItemSubjectRef().getStructureRef());
+                        }
                         dataInBuffer.append(",");
                     }
                     if(dataIn.getName() != null && dataIn.getName().equals("GroupId")) {
@@ -1229,6 +1238,9 @@ public class Bpmn2JsonMarshaller {
                 List<DataOutput> dataOutputList =  outset.getDataOutputRefs();
                 for(DataOutput dataOut : dataOutputList) {
                     dataOutBuffer.append(dataOut.getName());
+                    if(dataOut.getItemSubjectRef() != null && dataOut.getItemSubjectRef().getStructureRef() != null && dataOut.getItemSubjectRef().getStructureRef().length() > 0) {
+                    	dataOutBuffer.append(":").append(dataOut.getItemSubjectRef().getStructureRef());
+                    }
                     dataOutBuffer.append(",");
                 }
             }
@@ -1633,8 +1645,11 @@ public class Bpmn2JsonMarshaller {
             for(InputSet inset : inputSetList) {
                 List<DataInput> dataInputList =  inset.getDataInputRefs();
                 for(DataInput dataIn : dataInputList) {
-                    if(dataIn.getName() != null) {
+                	if(dataIn.getName() != null) {
                         dataInBuffer.append(dataIn.getName());
+                        if(dataIn.getItemSubjectRef() != null && dataIn.getItemSubjectRef().getStructureRef() != null && dataIn.getItemSubjectRef().getStructureRef().length() > 0) {
+                        	dataInBuffer.append(":").append(dataIn.getItemSubjectRef().getStructureRef());
+                        }
                         dataInBuffer.append(",");
                     }
                 }
@@ -1653,6 +1668,9 @@ public class Bpmn2JsonMarshaller {
                 List<DataOutput> dataOutputList =  outset.getDataOutputRefs();
                 for(DataOutput dataOut : dataOutputList) {
                     dataOutBuffer.append(dataOut.getName());
+                    if(dataOut.getItemSubjectRef() != null && dataOut.getItemSubjectRef().getStructureRef() != null && dataOut.getItemSubjectRef().getStructureRef().length() > 0) {
+                    	dataOutBuffer.append(":").append(dataOut.getItemSubjectRef().getStructureRef());
+                    }
                     dataOutBuffer.append(",");
                 }
             }
