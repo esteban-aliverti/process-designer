@@ -387,7 +387,7 @@ Ext.form.GuvnorPopupEditor = function(_srcShape, _helper, _onSave){
                 _modelEntitiesInPath.each(function(_modelEntity){
                     var _validFact = _modelEntity.properties['oryx-modelentity'];
                     var _factField = _modelEntity.properties['oryx-fieldconstraint'];
-                    var _matchesObject = _modelEntity.properties['oryx-'+_factField];
+                    var _matchesObject = _modelEntity.properties['oryx-'+_factField.toLowerCase()];
                    
                     if (!_validFact){
                         errors.push("Fact Name is mandatory!");

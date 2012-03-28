@@ -359,10 +359,11 @@
                     <property name="width" value="650"/>
                     <property name="height" value="400"/>
                 </plugin>        
-                <plugin source="kmr/kmrVocabularyType.js" name="ORYX.Plugins.KmrVocabularyType" />        
-                <plugin source="kmr/externalKmrVocabularyType.js" name="ORYX.Plugins.ExternalKmrVocabularyType" />        
                 <plugin source="DataAssignment/extendedDataAssignmentEditor.js" name="ORYX.Plugins.ExtendedDataAssignmentEditor" />        
                 <plugin source="DataAssignment/FieldDataAssignmentEditors.js" name="ORYX.Plugins.FieldDataAssignmentEditors" />        
+                <plugin source="kmr/kmrVocabularyType.js" name="ORYX.Plugins.KmrVocabularyType" />        
+                <plugin source="kmr/externalKmrVocabularyType.js" name="ORYX.Plugins.ExternalKmrVocabularyType" />        
+                <plugin source="kmr/messageLinkDataAssignmentEditor.js" name="ORYX.Plugins.MessageLinkDataAssignmentEditor" />        
 	</plugins>
 	
 	<properties>

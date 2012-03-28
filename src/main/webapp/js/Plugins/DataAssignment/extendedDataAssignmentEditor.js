@@ -62,7 +62,7 @@ Ext.form.ExtendedDataAssignmentEditor = function(_config){
                     var editorClass = ORYX.AssociationEditors[record.get("dataType")];
                     //is there any editor registered for this type?
                     if (editorClass !== undefined){
-                        return editorClass.init.bind(this, grid, record)();
+                        return editorClass.init.bind(this, grid, record, colIndex, rowIndex)();
                     }
                     //if no custom editor, then let's go with the default'
                 }

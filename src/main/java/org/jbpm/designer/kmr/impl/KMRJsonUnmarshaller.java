@@ -257,12 +257,12 @@ public class KMRJsonUnmarshaller extends Bpmn2JsonUnmarshaller {
         if (properties.get("modelentity") != null) {
             //Set custom text as a concatenation of modelentity and the property
             //indicated by fieldconstraint
-            text = "KMRCustom--" + properties.get("modelentity") + "--" + properties.get("fieldconstraint") + "--" + properties.get(properties.get("fieldconstraint"));
+            text = "KMRCustom--" + properties.get("modelentity") + "--" + properties.get("fieldconstraint") + "--" + properties.get(properties.get("fieldconstraint").toLowerCase());
         }
 
         //if ta has a 'cohortentity' property means that is one of our
         //cohort entities.
-        if (properties.get("cohortentity") != null) {
+        if (properties.get("cohortentity") != null) { 
             //Set custom text as a concatenation of modelentity and the property
             //indicated by fieldconstraint
             text = "KMRCustomCohort--";

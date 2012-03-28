@@ -1668,6 +1668,7 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
         
         varDataTitle.push("");
         varDataTitle.push("** Variable Definitions **");
+        varDataTitle.push("");
         varData.push(varDataTitle);
         if(processVars) {
         	processVars.forEach(function(item){
@@ -1686,6 +1687,7 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
 	        				innerVal.push(nextPart);
                                                 dataTypeMap[nextPart] = "java.lang.String";
 	        			}
+                                        innerVal.push("ux-data-var");
 	        			varData.push(innerVal);
 	        		}
         	    }
@@ -1695,6 +1697,7 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
         var dataInputsTitle = new Array();
         dataInputsTitle.push("");
         dataInputsTitle.push("** Data Inputs **");
+        dataInputsTitle.push("");
         varData.push(dataInputsTitle);
         Ext.each(this.dataSource.data.items, function(item){
         	if(item.data['name'] == "DataInputSet") {
@@ -1712,6 +1715,7 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
                                         innerVal.push(nextPart);
                                         dataTypeMap[nextPart] = "java.lang.String";
                                 }
+                                innerVal.push("ux-data-in");
     				varData.push(innerVal);
         		}
         	} 
@@ -1720,6 +1724,7 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
         var dataOutputsTitle = new Array();
         dataOutputsTitle.push("");
         dataOutputsTitle.push("** Data Outputs **");
+        dataOutputsTitle.push("");
         varData.push(dataOutputsTitle);
         Ext.each(this.dataSource.data.items, function(item){
         	if(item.data['name'] == "DataOutputSet") {
@@ -1737,6 +1742,7 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
                                         innerVal.push(nextPart);
                                         dataTypeMap[nextPart] = "java.lang.String";
                                 }
+                                innerVal.push("ux-data-out");
     				varData.push(innerVal);
         		}
         	} 
@@ -1747,11 +1753,11 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
         }, {
             name: 'type'
         }, {
-        	name: 'to'
+            name: 'to'
         }, {
-        	name: 'tostr'
+            name: 'tostr'
         }, {
-                name: 'dataType'
+            name: 'dataType'
         }
         ]);
     	
@@ -1841,10 +1847,16 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
 	            header: 'From Object',
 	            width: 180,
 	            dataIndex: 'from',
+                    renderer: function(value, metadata, record, rowIndex, columnIndex, store){
+                        //var ed = grid.getColumnModel().getCellEditor(columnIndex, rowIndex);
+                        return value;
+                    },
 	            editor: new Ext.form.ComboBox({
 	            	id: 'fromCombo',
+                        plugins:new Ext.ux.plugins.IconCombo(),
 	            	valueField:'name',
 	            	displayField:'value',
+	            	iconClsField:'type',
 	            	typeAhead: true,
                         mode: 'local',
                         triggerAction: 'all',
@@ -1852,7 +1864,8 @@ Ext.form.ComplexDataAssignmenField = Ext.extend(Ext.form.TriggerField,  {
                         store: new Ext.data.SimpleStore({
                             fields: [
                                         'name',
-                                        'value'
+                                        'value',
+                                        'type'
                                     ],
                             data: varData
                         })
@@ -2408,3 +2421,46 @@ Ext.form.ComplexGlobalsField = Ext.extend(Ext.form.TriggerField,  {
 		
 	}
 });
+
+
+Ext.namespace('Ext.ux.plugins');
+ 
+Ext.ux.plugins.IconCombo = function(config) {
+    Ext.apply(this, config);
+};
+ 
+// plugin code
+Ext.extend(Ext.ux.plugins.IconCombo, Ext.util.Observable, {
+    init:function(combo) {
+        Ext.apply(combo, {
+            tpl:  '<tpl for=".">'
+                + '<div class="x-combo-list-item ux-icon-combo-item '
+                + '{' + combo.iconClsField + '}">'
+                + '{' + combo.displayField + '}'
+                + '</div></tpl>',
+ 
+            onRender:combo.onRender.createSequence(function(ct, position) {
+                // adjust styles
+                this.wrap.applyStyles({position:'relative'});
+                this.el.addClass('ux-icon-combo-input');
+ 
+                // add div for icon
+                this.icon = Ext.DomHelper.append(this.el.up('div.x-form-field-wrap'), {
+                    tag: 'div', style:'position:absolute'
+                });
+            }), // end of function onRender
+ 
+            setIconCls:function() {
+                var rec = this.store.query(this.valueField, this.getValue()).itemAt(0);
+                if(rec) {
+                    this.icon.className = 'ux-icon-combo-icon ' + rec.get(this.iconClsField);
+                }
+            }, // end of function setIconCls
+ 
+            setValue:combo.setValue.createSequence(function(value) {
+                this.setIconCls();
+            })
+        });
+    } // end of function init
+}); // end of extend
+ 

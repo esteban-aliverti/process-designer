@@ -3087,15 +3087,15 @@
                                 "id":"fieldConstraint",
                                 "type":"String",
                                 "title":"Field Constraint",
-                                "value":"oid",
+                                "value":"hasTypeReference.conceptpointer.conceptcode",
                                 "readonly":true,
                                 "optional":false,
                                 "visible":false
                             \},
                             \{
-                                "id":"oid",
+                                "id":"hasTypeReference.conceptpointer.conceptcode",
                                 "type":"externalkmrsinglevocabulary",
-                                "title":"OID",
+                                "title":"Concept Code",
                                 "value":"",
                                 "description":"",
                                 "readonly":     false,

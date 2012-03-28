@@ -67,7 +67,7 @@ public class KMRJsonMarshaller extends Bpmn2JsonMarshaller {
             Map<String, Object> properties = new LinkedHashMap<String, Object>();
             properties.put("name", name);
             properties.put("modelentity", nameParts[1]);
-            properties.put(nameParts[2], nameParts[3]);
+            properties.put(nameParts[2].toLowerCase(), nameParts[3]);
 
             marshallProperties(properties, generator);
             

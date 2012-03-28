@@ -1,3 +1,38 @@
+.ux-data-in {
+    background-image: url('../images/arrow-left.png') !important;
+}
+
+.ux-data-out {
+    background-image: url('../images/arrow-right.png') !important;
+}
+
+.ux-data-var {
+    background-image: url('../images/arrow-top.png') !important;
+}
+
+.ux-icon-combo-icon {
+    background-repeat: no-repeat;
+    background-position: 0 50%;
+    width: 18px;
+    height: 11px;
+}
+
+/* X-BROWSER-WARNING: this is not being honored by Safari */
+.ux-icon-combo-input {
+    padding-left: 25px ! important;
+}
+
+.x-form-field-wrap .ux-icon-combo-icon {
+        top: 3px;
+        left: 5px;
+    }
+    
+.ux-icon-combo-item {
+    background-repeat: no-repeat ! important;
+    background-position: 3px 50% ! important;
+    padding-left: 24px ! important;
+}
+
 .processdata {
 	display:none;
 }
